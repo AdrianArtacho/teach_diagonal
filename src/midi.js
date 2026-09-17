@@ -1,4 +1,5 @@
 import {address} from './music.js';
+import {NOVATION_PROFILE, NOVATION_MAPPING} from './presets.js';
 export const MINI_HEADER = [240, 0, 32, 41, 2, 13];
 export const programmerMessage = enabled => [...MINI_HEADER, 14, enabled ? 1 : 0, 247];
 export function decodeNote(data) {
@@ -43,13 +44,15 @@ export class Midi {
     this.lights = true; this.cache.clear();
   }
   live() {if (this.programmed) this.send(this.out, programmerMessage(false)); this.programmed = false;}
-  padAddress(pad) {return this.profile === 'custom' ? this.custom[pad.id]?.note : address(pad.r, pad.c, this.rotation);}
+  get mapped() {return this.profile === 'custom' || this.profile === NOVATION_PROFILE;}
+  get activeMapping() {return this.profile === NOVATION_PROFILE ? NOVATION_MAPPING : this.custom;}
+  padAddress(pad) {return this.mapped ? this.activeMapping[pad.id]?.note : address(pad.r, pad.c, this.rotation);}
   padFor(note, channel, pads) {
-    return pads.find(p => this.padAddress(p) === note && (this.profile !== 'custom' || this.custom[p.id]?.channel === channel));
+    return pads.find(p => this.padAddress(p) === note && (!this.mapped || this.activeMapping[p.id]?.channel === channel));
   }
   ledAddress(pad) {
-    const v = this.custom[pad.id];
-    return this.profile === 'custom' ? (v ? {note: v.ledNote ?? v.note, channel: v.ledChannel ?? 0} : null)
+    const v = this.activeMapping[pad.id];
+    return this.mapped ? (v ? {note: v.ledNote ?? v.note, channel: v.ledChannel ?? 0} : null)
       : {note: address(pad.r, pad.c, this.rotation), channel: 0};
   }
   setLed(destination, color) {

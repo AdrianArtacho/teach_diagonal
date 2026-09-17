@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 from harness_v2 import ROOT, prepare
-ART=ROOT/'artifacts'; ART.mkdir(exist_ok=True)
+ART=Path(os.environ.get('DIAMOND_TEST_ARTIFACTS', str(ROOT/'artifacts'/'v2-regression-v3'))); ART.mkdir(exist_ok=True)
 checks=[]
 def check(value,name):
     assert value,name
@@ -46,6 +46,7 @@ with sync_playwright() as p:
     page.locator('#connect').click()
     page.wait_for_function("document.getElementById('connection-badge').textContent==='MIDI input connected'")
     check(page.evaluate('__sent.length')==0,'Connect alone sends no unsolicited MIDI')
+    page.locator('#profile').select_option('mini')
     page.locator('#programmer').click();page.wait_for_timeout(120)
     check(page.evaluate('__sent.some(x=>JSON.stringify(x.bytes)===JSON.stringify([240,0,32,41,2,13,14,1,247]))'),'Mini Programmer command remains supported')
     page.locator('#restart').click()

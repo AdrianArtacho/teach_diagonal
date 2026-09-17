@@ -3,11 +3,13 @@ import {Sound} from './audio.js';
 import {Midi, decodeNote, isLaunchpad} from './midi.js';
 import {normalizeMapping} from './mapping.js';
 import {setupExperience} from './experience.js';
+import {Repeat, setupRepeat} from './repeat.js';
 const $ = id => document.getElementById(id);
 const practice = new Practice(), voices = new Map(), wrong = new Set();
 let pads = layout(), base = 60, song = null, catalog = [], free = false, listening = false, listenIndex = 0;
 let playToken = 0, loadToken = 0, errorTimer = 0;
-let experience;
+let experience, repeatUI;
+const repeat = new Repeat();
 const timers = new Set();
 let settings = {};
 try {const stored = JSON.parse(localStorage.getItem('diamond-v1') || '{}'); if (stored && typeof stored === 'object' && !Array.isArray(stored)) settings = stored;} catch {}
@@ -74,9 +76,9 @@ function render() {
   $('listen').textContent = listening ? '■ Stop' : '▶ Listen';
   for (const id of ['listen', 'restart', 'back', 'next']) $(id).disabled = !practice.steps.length;
   $('hear-note').disabled = !step();
-  $('rotation').disabled = midi.profile === 'custom';
-  $('rotation').title = midi.profile === 'custom' ? 'A learned map already defines physical orientation. Relearn the pads after rotating the controller.' : '';
-  experience?.status();
+  $('rotation').disabled = midi.mapped;
+  $('rotation').title = midi.mapped ? 'This mapping already defines physical orientation. Learn a custom map after rotating the controller.' : '';
+  experience?.status(); repeatUI?.status();
 }
 function press(note, id, velocity = 96, gesture = false, judge = true) {
   if (!Number.isInteger(note) || note < 0 || note > 127 || voices.has(id)) return;
@@ -94,6 +96,7 @@ function press(note, id, velocity = 96, gesture = false, judge = true) {
       wrong.add(note); $('feedback').textContent = `You played ${noteName(note)}. Try the illuminated note.`;
       clearTimeout(errorTimer); errorTimer = setTimeout(() => {wrong.clear(); render();}, 700);
     } else {wrong.clear();}
+    if (result === 'advance') repeat.wrap(practice); // Keep held voices until their real note-off.
   }
   render();
 }
@@ -111,9 +114,9 @@ function stopListen() {
   playToken++; for (const t of timers) clearTimeout(t); timers.clear(); listening = false;
   silence(); render();
 }
-function restart() {stopListen(); practice.seek(0); practice.hits = 0; practice.errors = 0; base = Number($('octave').value); updateLayout(); render();}
+function restart() {stopListen(); repeat.laps = 0; practice.seek(0); practice.hits = 0; practice.errors = 0; base = Number($('octave').value); updateLayout(); render();}
 function rebuild() {
-  cancelLearn(); stopListen(); base = Number($('octave').value); updateLayout();
+  cancelLearn(); stopListen(); repeat.laps = 0; base = Number($('octave').value); updateLayout();
   if (!song) return;
   try {
     const transposition = Number($('transpose').value);
@@ -150,10 +153,15 @@ async function listen() {
   stopListen(); const token = playToken; await sound.unlock(); if (token !== playToken) return;
   if (!practice.steps.length) return;
   listening = true; listenIndex = practice.index < practice.steps.length ? practice.index : 0;
-  const start = performance.now(), origin = practice.steps[listenIndex].time, speed = Number($('speed').value) / 100;
+  let start = performance.now(), origin = practice.steps[listenIndex].time;
+  const speed = Number($('speed').value) / 100;
   const next = () => {
     if (token !== playToken) return;
-    if (listenIndex >= practice.steps.length) {stopListen(); return;}
+    if (listenIndex >= practice.steps.length) {
+      if (!repeat.enabled) {stopListen(); return;}
+      // A fresh time origin prevents compressed or runaway scheduling after wrap.
+      listenIndex = 0; start = performance.now(); origin = practice.steps[0].time;
+    }
     const s = practice.steps[listenIndex]; render();
     const notes = target().notes; // Reference playback can sound pitches outside a fixed range.
     for (const [j, n] of notes.entries()) {
@@ -288,7 +296,8 @@ $('midi-synth').onchange = safe(async () => {
   if (out && (out.id === midi.out?.id || isLaunchpad(out))) throw new Error('The sound output cannot be the Launchpad lighting output.');
   midi.synth = out; if (out) await out.open();
 });
-$('profile').onchange = () => {stopListen(); cancelLearn(); midi.clear(); midi.live(); midi.lights = false; midi.profile = $('profile').value; $('connection-badge').textContent = 'Lights off · select Enable lighting'; save(); render();};
+$('profile').onchange = () => {stopListen(); cancelLearn(); midi.clear(); midi.lights = false; midi.profile = $('profile').value; // Presets never change hardware mode.
+ $('connection-badge').textContent = 'Lights off · select Enable lighting'; save(); render();};
 $('rotation').onchange = () => {stopListen(); midi.clear(); midi.rotation = Number($('rotation').value); save(); render();};
 $('input-kind').onchange = () => {stopListen(); save();};
 $('sound-enabled').onchange = () => {sound.enabled = $('sound-enabled').checked; sound.panic(); $('sound-start').textContent = sound.enabled ? 'Enable sound' : 'Sound muted'; save();};
@@ -323,6 +332,7 @@ $('fullscreen').onclick = safe(async () => {
   else notice('Fullscreen is unavailable here. On iPad, add this page to the Home Screen for a larger practice view.');
 });
 experience = setupExperience({midi, settings, save, stop:stopListen, render, connect});
+repeatUI = setupRepeat({repeat, practice, settings, save, render, restart});
 render();
 if (!navigator.requestMIDIAccess) $('connect').title = 'This browser has no Web MIDI. Touch and browser sound work without it.';
 (async () => {

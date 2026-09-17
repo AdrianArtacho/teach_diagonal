@@ -62,3 +62,12 @@ progress{grid-column:2;grid-row:2;margin:0}
 @media(max-width:1000px){.practice-panel{grid-template-columns:1fr 1fr;grid-template-rows:auto auto auto auto}.practice-options{grid-column:2;grid-row:5}.next-card{grid-column:1;grid-row:1/6}.map-layout{grid-template-columns:1fr}.map-stage{max-width:360px;margin:auto}.map-layout>div>p{max-width:none}}
 @media(max-width:650px){.viewbar{gap:8px}.view-hint{display:none}.viewbar>button{flex:1;font-size:.74rem}.view-switch{width:100%}.view-switch button{flex:1}.practice-panel{display:flex;flex-direction:column;padding:16px}.practice-options{display:grid}.next-card #feedback{max-width:none}.next-card #hear-note{position:static}.instrument-panel{padding:12px 4px}.pad>span{font-size:clamp(.66rem,2.6vw,.9rem)}.legend{font-size:.63rem;gap:10px}.piano-panel{padding:16px 6px}.piano{height:42dvh}.piano-key{padding-bottom:16px}.simple-bar strong{font-size:.84rem}.simple-bar span{font-size:.64rem}.simple-bar button{font-size:.75rem}#mapping-dialog{padding:14px}.map-heading h2{font-size:1.15rem}.map-bottom{bottom:-14px}.map-table{min-width:510px}.map-connections>label{min-width:135px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+/* v3: compact transport is always reachable in simple mode. */
+.simple-bar>.simple-actions{display:flex;gap:6px;flex-shrink:0;min-width:0}
+.simple-actions button{min-width:42px;min-height:42px}
+.simple-actions #simple-loop[aria-pressed=true]{background:var(--cyan);border-color:var(--cyan);color:#112f32}
+.practice-options>.loop-control{grid-column:1/-1;flex-wrap:wrap;gap:8px}
+.loop-control input{width:18px;height:18px;margin:0}
+.loop-control #loop-count{margin-left:auto}
+@media(max-width:650px){.simple-bar{gap:8px}.simple-actions{gap:4px!important}.simple-actions #restore-controls{font-size:.7rem;padding:.45rem}.simple-bar>div:first-child{flex:1;min-width:0}.simple-actions button{padding:.4rem}}

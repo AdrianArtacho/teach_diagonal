@@ -1,0 +1,28 @@
+{
+  "version": "2.1.0",
+  "date": "2026-09-17",
+  "node_tests": {
+    "passed": 86,
+    "failed": 0
+  },
+  "existing_browser_regressions": {
+    "passed": 70,
+    "failed": 0
+  },
+  "new_browser_checks": {
+    "passed": 34,
+    "failed": 0
+  },
+  "mapping": {
+    "source": "User-uploaded diamond-pad-map.json",
+    "repository_path": "mappings/novation-launchpad.json",
+    "byte_for_byte_match": true,
+    "sha256": "a9f8aa307706d935c7ed030a0df39fc3362e890505e5a7b810a9a421d5daa001"
+  },
+  "not_tested": [
+    "Physical Launchpad/LEDs",
+    "Real iPad/Safari hardware",
+    "Audible latency",
+    "Live browser navigation (blocked by environment)"
+  ]
+}

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Run the current browser regression suite. The v1 harness remains in Git history."""
+"""Run both the existing interaction regressions and the new repeat/preset checks."""
 import runpy
 from pathlib import Path
-runpy.run_path(str(Path(__file__).with_name('browser_v2.py')), run_name='__main__')
+for script in ['browser_v2.py', 'browser_v3.py']:
+    runpy.run_path(str(Path(__file__).with_name(script)), run_name='__main__')

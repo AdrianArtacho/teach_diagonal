@@ -90,7 +90,7 @@ export class MappingEditor {
   open() {
     if (this.dialog.open) return;
     this.stop(); this.session = (this.session || 0) + 1; this.previousLights = this.midi.lights; this.midi.clear(); this.midi.lights = false;
-    this.draft = this.midi.profile === 'custom' ? structuredClone(this.midi.custom) : Object.fromEntries(playablePads.map(p => {
+    this.draft = this.midi.mapped ? structuredClone(this.midi.activeMapping) : Object.fromEntries(playablePads.map(p => {
       const note = this.midi.padAddress(p); return [p.id,{note,channel:0,ledNote:note,ledChannel:0}];
     }));
     this.cancelLearning(); this.fillRows(); this.dialog.showModal(); this.refreshPorts();

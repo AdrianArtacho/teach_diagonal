@@ -2,7 +2,7 @@
 
 **A different way to play.** Learn a MIDI melody by playing the next illuminated key, using a diamond-shaped Launchpad or an on-screen piano. Developed by **Adrián Artacho**.
 
-Version **2.0.0** adds full-width alternate views, a controls-hidden practice mode, and a staged controller mapping editor. The original Max project in `diagonal/`, the `download-sheet` submodule and version-1 artifacts are retained. The browser app does not depend on the Max project or submodule.
+Version **2.1.0** adds melody looping, a simple-mode restart button and the built-in **Novation Launchpad** mapping exported by Adrián. Full-width alternate views, simple mode and the mapping editor remain available. The original Max project in `diagonal/`, the `download-sheet` submodule and version-1 artifacts are retained. The browser app does not depend on the Max project or submodule.
 
 ## Start playing
 
@@ -11,6 +11,22 @@ Open [Diamond](https://adrianartacho.github.io/teach_diagonal/), choose a librar
 The library contains new, simple arrangements of **Ode to Joy** and **Frère Jacques**, plus **Chromatic Walk** and **Diamond Chords**. **Listen** plays a reference using the file's tempo map; its speed is adjustable. Practice is untimed pitch guidance, not rhythm or articulation assessment.
 
 Both views support mouse, multitouch and keyboard. Computer keys `A S D F G H J K` play white keys; `W E T Y U` play black keys. Tab then Enter/Space plays a focused key. Escape silences notes and stops playback.
+
+## Loop mode, quick restart and the bundled preset
+
+Enable **Loop melody** below the instrument, or use **↻** beside **☰ Controls** in simple mode. After the last correct note/chord, the first target lights up again. Repeated or held notes still require a release and a fresh press; looping does not create automatic key presses. The regular controls show completed practice rounds. Retries accumulate until an explicit restart or a new song/part resets the session. **Listen** also repeats while Loop is enabled, resetting its playback time origin at each pass. Switching Loop off lets Listen finish its current pass.
+
+Use `loop=1` to enable repetition in a link and `loop=0` to explicitly disable it. The URL overrides the remembered preference. Without an override, the previous choice is restored. **Copy practice link** includes the loop setting, even when it is off.
+
+[Ode to Joy · simple piano · looping](https://adrianartacho.github.io/teach_diagonal/?song=ode-to-joy&view=piano&simple=1&loop=1) · [Simple diamond · looping](https://adrianartacho.github.io/teach_diagonal/?view=diamond&simple=1&loop=1)
+
+The **↺** button is always available in simple mode. It stops sounding notes/reference playback, returns to the first step, and clears practice statistics without changing the song, view, loop setting or controller mapping. It resets the sequence; it does not automatically start reference playback.
+
+Under **Controller & sound settings → Controller profile**, select **Novation Launchpad · saved preset**. The exact supplied export is stored in [`mappings/novation-launchpad.json`](mappings/novation-launchpad.json). This preset reproduces Adrián's setup, not a universal factory mapping: use the same physical orientation and hardware mode as during the export. It is the default only in a browser without a saved profile. Existing profiles and Custom mappings are preserved. Selecting a preset never sends a hardware-mode command; use **Light up (keep current hardware mode)** to enable its feedback.
+
+The eight white-key input/LED addresses are **64, 61, 58, 55, 80, 77, 74, 71**; the five black-key addresses are **65, 62, 84, 81, 78**. All use channel **1** (zero-based `0` in the JSON). You can inspect the preset in Map controller, edit a copy into Custom, or return to the built-in preset without importing a file. The preset never replaces your separate saved Custom calibration.
+
+`mappings/novation-launchpad.json` is the source of truth. `node tools/generate_preset.mjs` generates its browser module, `src/presets.js`; `--check` verifies the two match. The deployment workflow runs that check. No network request or manual import is needed to load the built-in preset.
 
 ## Two views, one lesson
 
@@ -22,15 +38,15 @@ The diamond's centre diagonal is **C D E F G A B C**, with **C♯ D♯ F♯ G♯
 
 ## Simple mode and links
 
-Press **Simple mode** or **M** to hide setup, lesson controls, navigation and footer. Only the keyboard, compact song/next-note indicator and **☰ Controls** remain. Click Controls, press M again, or Escape to restore everything without reloading.
+Press **Simple mode** or **M** to hide setup, lesson controls, navigation and footer. Only the keyboard, compact song/next-note indicator, **↺ Restart**, **↻ Loop** and **☰ Controls** remain. Click Controls, press M again, or Escape to restore everything without reloading.
 
 - [Simple piano](https://adrianartacho.github.io/teach_diagonal/?view=piano&simple=1)
 - [Simple diamond](https://adrianartacho.github.io/teach_diagonal/?view=diamond&simple=1)
 - [Ode to Joy on the simple piano](https://adrianartacho.github.io/teach_diagonal/?song=ode-to-joy&view=piano&simple=1)
 
-URL parameters: `view=diamond|piano`, `simple=1|0`, and alias `clear=1`. A bare `simple` or `simple=true` also works. Explicit URL values override remembered view settings; `simple=0` overrides saved simple mode. View changes update the URL without removing the song or unrelated parameters.
+URL parameters: `view=diamond|piano`, `simple=1|0`, `loop=1|0`, and alias `clear=1`. A bare `simple` or `simple=true` also works. Explicit URL values override remembered view settings; `simple=0` overrides saved simple mode. View changes update the URL without removing the song or unrelated parameters.
 
-**Copy practice link** creates a simple-mode link for the current view and repository song. Local MIDI files and personal controller maps are **not embedded in links**; open/import them separately on the other device. A selectable-text fallback is provided when clipboard access is unavailable.
+**Copy practice link** creates a simple-mode link for the current view, loop setting and repository song. Local MIDI files and personal controller maps are **not embedded in links**; open/import them separately on the other device. A selectable-text fallback is provided when clipboard access is unavailable.
 
 Simple mode fills the **browser viewport** without requesting native fullscreen. The existing ⛶ button separately requests native fullscreen where supported; this requires a user gesture and cannot be granted by a URL. On wide, shallow displays, the diamond's **inactive top/bottom corners are cropped**, rather than shrinking the playable diagonal. All 13 musical pads remain visible at the tested desktop, tablet and phone sizes. In portrait, the complete diamond is centred and spans the available width without stretching square pads.
 
@@ -91,7 +107,7 @@ Local MIDI files are read in memory and **not uploaded**. They are not retained 
 
 ## Development, deployment and artifacts
 
-Runtime files: `index.html`, `styles.css`, `experience.css`, `icon.svg`, `src/`, `library/`. No bundler, package install or backend is needed. Relative paths work under the Pages project URL.
+Runtime files: `index.html`, `styles.css`, `experience.css`, `icon.svg`, `src/`, `library/`, `mappings/`. No bundler, package install or backend is needed. Relative paths work under the Pages project URL.
 
 In [Settings → Pages](https://github.com/AdrianArtacho/teach_diagonal/settings/pages), choose **Source: GitHub Actions**. `.github/workflows/pages.yml` runs core tests, stages only the app, and deploys it. Recursive submodule checkout is intentionally disabled: the old default Pages build failed fetching `download-sheet`. Nothing from the legacy project was deleted to solve that.
 
@@ -102,13 +118,15 @@ node --test tests/*.test.mjs
 python3 tests/browser_smoke.py
 ```
 
-Browser checks require Python `playwright` and Chromium at `/usr/bin/chromium`, or set `CHROMIUM`. `browser_smoke.py` runs `browser_v2.py`. Generated screenshots and reports go to `artifacts/`; older artifact versions are preserved.
+Browser checks require Python `playwright` and Chromium at `/usr/bin/chromium`, or set `CHROMIUM`. `browser_smoke.py` runs the v2 regression suite and the new `browser_v3.py` checks. Re-run outputs for the v2 suite are kept in `artifacts/v2-regression-v3/`, not over the original v2 reports. Generated screenshots and reports go to `artifacts/`; older artifact versions are preserved.
 
-**Verified v2: 71 Node tests and 70 Chromium browser checks passed.** See `artifacts/browser-verification-v2.json` and `artifacts/release-notes-v2.md`. Coverage includes parser/geometry regressions, URL priority, learning and single-key repair, cancellation, mapping migration/import/export, separate input/LED channels, shared progress/chords, and layouts at 1360×1000, 820×1180, 390×844 and 844×390.
+**Verified v2 (historical): 71 Node tests and 70 Chromium browser checks passed.** See `artifacts/browser-verification-v2.json` and `artifacts/release-notes-v2.md`. Coverage includes parser/geometry regressions, URL priority, learning and single-key repair, cancellation, mapping migration/import/export, separate input/LED channels, shared progress/chords, and layouts at 1360×1000, 820×1180, 390×844 and 844×390.
+
+**Verified v2.1: 86 Node tests, all 70 existing browser regression checks, and 34 new browser checks passed.** See `artifacts/release-notes-v3.md`, `artifacts/verification-v3.json` and `artifacts/browser-verification-v3.json`. New coverage includes loop boundaries, held notes, restart, URL priority/persistence, the preset and its independent Custom mapping, and simple-mode controls down to 320 pixels wide. The supplied JSON was compared byte-for-byte with the committed copy.
 
 Browser navigation is disabled in the test environment. `tests/harness_v2.py` therefore supplies fixture-backed URL, localStorage, fetch and Web MIDI, evaluating shipped code in isolated module scopes with import/export and URL-source substitutions. It exercises real Chromium DOM/CSS/events but does not test live network navigation, native UI-module loading, or physical hardware. Native imports and pure logic are separately tested with Node. Physical Launchpad ports/LED palettes, real iPad/Safari behaviour and audible latency still require hands-on verification.
 
-Modules: `music.js` (geometry, MIDI parser, lesson engine), `midi.js` (ports/LEDs), `audio.js` (synthesis), `app.js` (shared input/lesson lifecycle), `experience.js` (views/URL), `mapping.js` (validation/JSON), `mapping-ui.js` (staged calibration).
+Modules: `music.js` (geometry, MIDI parser, lesson engine), `midi.js` (ports/LEDs), `audio.js` (synthesis), `app.js` (shared input/lesson lifecycle), `experience.js` (views/URL), `mapping.js` (validation/JSON), `mapping-ui.js` (staged calibration), `repeat.js` (repeat state/controls), `presets.js` (generated built-in mapping).
 
 ## References
 

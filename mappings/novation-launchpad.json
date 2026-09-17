@@ -1,0 +1,84 @@
+{
+  "format": "diamond-pad-map",
+  "version": 2,
+  "mapping": {
+    "0-0": {
+      "note": 64,
+      "channel": 0,
+      "ledNote": 64,
+      "ledChannel": 0
+    },
+    "0-1": {
+      "note": 65,
+      "channel": 0,
+      "ledNote": 65,
+      "ledChannel": 0
+    },
+    "1-1": {
+      "note": 61,
+      "channel": 0,
+      "ledNote": 61,
+      "ledChannel": 0
+    },
+    "1-2": {
+      "note": 62,
+      "channel": 0,
+      "ledNote": 62,
+      "ledChannel": 0
+    },
+    "2-2": {
+      "note": 58,
+      "channel": 0,
+      "ledNote": 58,
+      "ledChannel": 0
+    },
+    "3-3": {
+      "note": 55,
+      "channel": 0,
+      "ledNote": 55,
+      "ledChannel": 0
+    },
+    "3-4": {
+      "note": 84,
+      "channel": 0,
+      "ledNote": 84,
+      "ledChannel": 0
+    },
+    "4-4": {
+      "note": 80,
+      "channel": 0,
+      "ledNote": 80,
+      "ledChannel": 0
+    },
+    "4-5": {
+      "note": 81,
+      "channel": 0,
+      "ledNote": 81,
+      "ledChannel": 0
+    },
+    "5-5": {
+      "note": 77,
+      "channel": 0,
+      "ledNote": 77,
+      "ledChannel": 0
+    },
+    "5-6": {
+      "note": 78,
+      "channel": 0,
+      "ledNote": 78,
+      "ledChannel": 0
+    },
+    "6-6": {
+      "note": 74,
+      "channel": 0,
+      "ledNote": 74,
+      "ledChannel": 0
+    },
+    "7-7": {
+      "note": 71,
+      "channel": 0,
+      "ledNote": 71,
+      "ledChannel": 0
+    }
+  }
+}

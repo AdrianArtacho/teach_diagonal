@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def make_bundle():
     result = ['window.__modules = {};']
-    for name in ['music.js','audio.js','midi.js','mapping.js','mapping-ui.js','experience.js','app.js']:
+    for name in ['music.js','audio.js','presets.js','midi.js','mapping.js','mapping-ui.js','experience.js','repeat.js','app.js']:
         src = (ROOT/'src'/name).read_text()
         exports = re.findall(r'export (?:const|class|function) (\w+)',src)
         src = re.sub(r"import \{(.*?)\} from '\./(.*?)';",lambda m:f"const {{{m[1]}}} = window.__modules[{json.dumps(m[2])}];",src)
