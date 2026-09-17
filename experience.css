@@ -71,3 +71,14 @@ progress{grid-column:2;grid-row:2;margin:0}
 .loop-control input{width:18px;height:18px;margin:0}
 .loop-control #loop-count{margin-left:auto}
 @media(max-width:650px){.simple-bar{gap:8px}.simple-actions{gap:4px!important}.simple-actions #restore-controls{font-size:.7rem;padding:.45rem}.simple-bar>div:first-child{flex:1;min-width:0}.simple-actions button{padding:.4rem}}
+
+/* Native fullscreen controls stay reachable in both presentations. */
+:root:fullscreen,:root:-webkit-full-screen{background:var(--bg)}
+.fullscreen-invite{position:fixed;top:max(10px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:min(440px,calc(100% - 24px));z-index:10;background:var(--panel);border:1px solid var(--cyan);border-radius:12px;padding:14px 18px;box-shadow:0 8px 40px #0008}
+.fullscreen-invite p{margin:0 0 12px;font-size:.84rem}.fullscreen-invite>div{display:flex;gap:8px}
+#simple-fullscreen{width:40px;min-width:40px;padding:5px;font-size:1.15rem}
+@media(max-width:430px){.simple-bar{gap:7px}.simple-bar .simple-actions{gap:3px}.simple-bar .mini-action{min-width:40px;width:40px;padding:4px}#simple-fullscreen{min-width:40px;width:40px}#restore-controls{font-size:.7rem;padding:6px}}
+
+.local-import-prompt{margin:12px;padding:14px;border:1px solid #d9af6744;border-radius:10px;background:var(--panel);display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.local-import-prompt>div{flex:1;min-width:200px}.local-import-prompt p{font-size:.82rem;color:var(--muted);margin:5px 0}
+.simple .source-link{display:none}

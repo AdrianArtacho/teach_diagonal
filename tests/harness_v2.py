@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def make_bundle():
     result = ['window.__modules = {};']
-    for name in ['music.js','audio.js','presets.js','midi.js','mapping.js','mapping-ui.js','experience.js','repeat.js','app.js']:
+    for name in ['music.js','audio.js','presets.js','midi.js','mapping.js','mapping-ui.js','experience.js','repeat.js','fullscreen.js','app.js']:
         src = (ROOT/'src'/name).read_text()
         exports = re.findall(r'export (?:const|class|function) (\w+)',src)
         src = re.sub(r"import \{(.*?)\} from '\./(.*?)';",lambda m:f"const {{{m[1]}}} = window.__modules[{json.dumps(m[2])}];",src)
@@ -19,7 +19,7 @@ def make_bundle():
         result.append(f'window.__modules[{json.dumps(name)}] = (()=>{{\n{src}\nreturn {{{",".join(exports)}}};\n}})();')
     return '\n'.join(result)
 
-def prepare(page, query='', saved=None):
+def prepare(page, query='', saved=None, extra_setup=''):
     html=(ROOT/'index.html').read_text()
     html=re.sub(r'<link[^>]*>','',html)
     html=re.sub(r'<script.*?</script>','',html,flags=re.S)
@@ -48,5 +48,6 @@ window.__midi=bytes=>input.onmidimessage?.({data:Uint8Array.from(bytes)});
     styles = re.findall(r'<link[^>]*rel="stylesheet"[^>]*href="([^"]+)"', (ROOT/'index.html').read_text())
     page.add_style_tag(content='\n'.join((ROOT / path).read_text() for path in styles))
     page.add_script_tag(content=setup)
+    if extra_setup: page.add_script_tag(content=extra_setup)
     page.add_script_tag(content=make_bundle())
     page.wait_for_function("document.getElementById('song-title').textContent!=='Your next melody starts here.'")

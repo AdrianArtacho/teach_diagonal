@@ -49,6 +49,11 @@ def main():
             for i in [14,15,16,17,20,21,22,23]: sequence[i] = (notes[i],0.5)
         (ROOT / 'library' / f'{ident}.mid').write_bytes(midi(title, sequence))
         index.append(dict(id=ident, title=title, file=f'{ident}.mid', description=description))
-    (ROOT / 'library' / 'index.json').write_text(json.dumps(index, ensure_ascii=False, indent=2)+'\n')
+    index_path = ROOT / 'library' / 'index.json'
+    old = json.loads(index_path.read_text()) if index_path.exists() else []
+    updates = {entry['id']: entry for entry in index}
+    merged = [updates.pop(entry['id'], entry) for entry in old]
+    merged.extend(updates.values())
+    index_path.write_text(json.dumps(merged, ensure_ascii=False, indent=2)+'\n')
 
 if __name__ == '__main__': main()

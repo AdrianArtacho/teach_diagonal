@@ -1,6 +1,6 @@
 {
   "name": "diamond-midi-tutor",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "private": true,
   "type": "module",
   "description": "A dependency-free diamond Launchpad keyboard and MIDI melody tutor",

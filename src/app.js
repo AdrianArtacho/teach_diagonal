@@ -4,11 +4,12 @@ import {Midi, decodeNote, isLaunchpad} from './midi.js';
 import {normalizeMapping} from './mapping.js';
 import {setupExperience} from './experience.js';
 import {Repeat, setupRepeat} from './repeat.js';
+import {setupFullscreen} from './fullscreen.js';
 const $ = id => document.getElementById(id);
 const practice = new Practice(), voices = new Map(), wrong = new Set();
 let pads = layout(), base = 60, song = null, catalog = [], free = false, listening = false, listenIndex = 0;
 let playToken = 0, loadToken = 0, errorTimer = 0;
-let experience, repeatUI;
+let experience, repeatUI, currentLibraryId = '';
 const repeat = new Repeat();
 const timers = new Set();
 let settings = {};
@@ -128,6 +129,7 @@ function rebuild() {
 }
 function setSong(bytes, title, description, id) {
   const parsed = parseMidi(bytes); // Invalid files do not destroy the currently loaded song.
+  $('local-import-prompt').hidden = true; currentLibraryId = id || '';
   stopListen(); song = parsed;
   $('song-title').textContent = title; $('song-description').textContent = description;
   $('track').replaceChildren(new Option('All pitched tracks', 'all'));
@@ -140,8 +142,17 @@ function setSong(bytes, title, description, id) {
   else {const url = new URL(location.href); url.searchParams.delete('song'); try {history.replaceState(null, '', url);} catch { /* Sandboxed embeds may not allow URL updates. */ }}
   rebuild();
 }
+function showLocalImport(entry) {
+  $('local-import-name').textContent = entry.title;
+  $('local-import-description').textContent = entry.description;
+  $('local-import-prompt').hidden = false;
+  $('song-select').value = currentLibraryId;
+  // Keep the current song, lesson progress and saved library selection unchanged.
+}
 async function loadLibrary(id) {
   const ticket = ++loadToken, entry = catalog.find(e => e.id === id); if (!entry) return;
+  if (entry.localOnly) {showLocalImport(entry); return;}
+  if (typeof entry.file !== 'string' || !entry.file) throw new Error('This library entry has no MIDI file.');
   const url = new URL(entry.file, new URL('library/', document.baseURI));
   if (url.origin !== new URL(document.baseURI).origin) throw new Error('Library songs must be hosted with this app.');
   const res = await fetch(url); if (!res.ok) throw new Error(`Could not load ${entry.title} (HTTP ${res.status}).`);
@@ -325,14 +336,12 @@ $('file').onchange = safe(async () => {
     setSong(data, file.name.replace(/\.(mid|midi)$/i, ''), 'Local MIDI file · stays on this device', null); $('song-select').value = '';
   } finally {$('file').value = '';}
 });
+$('local-import-open').onclick = () => $('file').click();
+$('local-import-close').onclick = () => {$('local-import-prompt').hidden = true;};
 $('upload-label').onkeydown = event => {if (event.key === 'Enter' || event.key === ' ') {event.preventDefault(); $('file').click();}};
-$('fullscreen').onclick = safe(async () => {
-  if (document.fullscreenElement) await document.exitFullscreen();
-  else if (document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
-  else notice('Fullscreen is unavailable here. On iPad, add this page to the Home Screen for a larger practice view.');
-});
 experience = setupExperience({midi, settings, save, stop:stopListen, render, connect});
 repeatUI = setupRepeat({repeat, practice, settings, save, render, restart});
+setupFullscreen({notice, simple: () => experience.simple()});
 render();
 if (!navigator.requestMIDIAccess) $('connect').title = 'This browser has no Web MIDI. Touch and browser sound work without it.';
 (async () => {
@@ -342,6 +351,10 @@ if (!navigator.requestMIDIAccess) $('connect').title = 'This browser has no Web 
     $('song-select').replaceChildren(new Option('Choose a song…', ''));
     for (const entry of catalog) $('song-select').add(new Option(entry.title, entry.id));
     const requested = new URL(location.href).searchParams.get('song') || settings.song;
-    await loadLibrary(catalog.find(e => e.id === requested)?.id || catalog[0]?.id);
+    const entry = catalog.find(e => e.id === requested);
+    if (entry?.localOnly) {
+      await loadLibrary(catalog.find(e => !e.localOnly && e.file)?.id);
+      showLocalImport(entry);
+    } else await loadLibrary(entry?.id || catalog.find(e => !e.localOnly && e.file)?.id);
   } catch (e) {notice(e.message);}
 })();

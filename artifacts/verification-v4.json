@@ -1,0 +1,71 @@
+{
+  "version": "2.2.0",
+  "date": "2026-09-17",
+  "node_tests": {
+    "passed": 110,
+    "failed": 0
+  },
+  "browser_tests": {
+    "existing_v2": 70,
+    "existing_v3": 34,
+    "new_v4": 52,
+    "total_passed": 156,
+    "failed": 0
+  },
+  "native_headless_chromium_fullscreen": true,
+  "new_melodies": [
+    {
+      "id": "mendelssohn-italian",
+      "file": "mendelssohn-italian.mid",
+      "license": "New event encoding: CC0; source editions retain their own rights",
+      "range": [
+        60,
+        67
+      ]
+    },
+    {
+      "id": "augustin",
+      "file": "augustin.mid",
+      "license": "New event encoding: CC0; source editions retain their own rights",
+      "range": [
+        60,
+        69
+      ]
+    },
+    {
+      "id": "moonlight",
+      "file": "moonlight.mid",
+      "license": "CC BY-SA 2.5",
+      "range": [
+        60,
+        72
+      ]
+    },
+    {
+      "id": "tchaikovsky-1812",
+      "file": "tchaikovsky-1812.mid",
+      "license": "New event encoding: CC0; source editions retain their own rights",
+      "range": [
+        60,
+        69
+      ]
+    },
+    {
+      "id": "tchaikovsky-romeo",
+      "file": "tchaikovsky-romeo.mid",
+      "license": "New event encoding: CC0; source editions retain their own rights",
+      "range": [
+        60,
+        72
+      ]
+    }
+  ],
+  "yakety_sax": "Local-import option only; no MIDI published",
+  "mapping_sha256": "a9f8aa307706d935c7ed030a0df39fc3362e890505e5a7b810a9a421d5daa001",
+  "not_tested": [
+    "Live browser navigation (blocked by administrator)",
+    "Physical Launchpad LEDs",
+    "Real iPad/Safari devices",
+    "Audio latency"
+  ]
+}

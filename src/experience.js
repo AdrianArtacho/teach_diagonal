@@ -3,7 +3,8 @@ export function viewOptions(url, saved = {}) {
   const params = new URL(url).searchParams;
   const candidate = params.get('view') ?? saved.view;
   const raw = params.get('simple') ?? params.get('clear');
-  return {view: candidate === 'piano' ? 'piano' : 'diamond', simple: raw == null ? saved.simple === true : ['', '1','true','yes','on'].includes(raw.toLowerCase())};
+  const fullscreen = ['', '1', 'true', 'yes', 'on'].includes((params.get('fullscreen') ?? '0').toLowerCase());
+  return {view: candidate === 'piano' ? 'piano' : 'diamond', simple: raw == null ? (fullscreen || saved.simple === true) : ['', '1','true','yes','on'].includes(raw.toLowerCase())};
 }
 export function viewURL(url, {view, simple}) {
   const result = new URL(url); result.searchParams.set('view', view); result.searchParams.set('simple', simple ? '1' : '0');
@@ -48,6 +49,7 @@ export function setupExperience({midi, settings, save, stop, render, connect}) {
   window.addEventListener('popstate', () => {stop(); state = viewOptions(location.href, settings); present(false); render();});
   present(false);
   return {
+    simple: () => change(state.view, true),
     receive: event => mapper.receive(event),
     cancelLearning: () => mapper.cancelLearning(),
     refreshPorts: () => mapper.refreshPorts(),

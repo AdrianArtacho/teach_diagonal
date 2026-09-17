@@ -22,5 +22,82 @@
     "title": "Diamond Chords",
     "file": "diamond-chords.mid",
     "description": "Original exercise · choose “All notes at each onset”"
+  },
+  {
+    "id": "mendelssohn-italian",
+    "title": "Mendelssohn · Italian Symphony",
+    "file": "mendelssohn-italian.mid",
+    "description": "Symphony No. 4 · opening violin motif · short C-major reduction, C4–G4",
+    "source": "https://nafme.org/wp-content/uploads/2021/03/Mendelssohn-Symphony-Score.pdf",
+    "license": "New event encoding: CC0; source editions retain their own rights",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "range": [
+      60,
+      67
+    ],
+    "starterPack": true
+  },
+  {
+    "id": "augustin",
+    "title": "O du lieber Augustin",
+    "file": "augustin.mid",
+    "description": "Traditional Viennese melody · C major · lower dominant notes raised an octave, C4–A4",
+    "source": "https://www.wienervolksliedwerk.at/VMAW/Noten/Augustin.pdf",
+    "license": "New event encoding: CC0; source editions retain their own rights",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "range": [
+      60,
+      69
+    ],
+    "starterPack": true
+  },
+  {
+    "id": "moonlight",
+    "title": "Beethoven · Moonlight Sonata",
+    "file": "moonlight.mid",
+    "description": "First movement · opening triplet figure, not the later upper melody · G minor, C4–C5",
+    "source": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=276",
+    "license": "CC BY-SA 2.5",
+    "license_url": "https://creativecommons.org/licenses/by-sa/2.5/",
+    "range": [
+      60,
+      72
+    ],
+    "starterPack": true
+  },
+  {
+    "id": "tchaikovsky-1812",
+    "title": "Tchaikovsky · 1812 Overture",
+    "file": "tchaikovsky-1812.mid",
+    "description": "Festive finale motif · short, slowed F-major reduction, C4–A4",
+    "source": "https://bandmusicpdf.org/1812overture/",
+    "license": "New event encoding: CC0; source editions retain their own rights",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "range": [
+      60,
+      69
+    ],
+    "starterPack": true
+  },
+  {
+    "id": "tchaikovsky-romeo",
+    "title": "Tchaikovsky · Romeo and Juliet",
+    "file": "tchaikovsky-romeo.mid",
+    "description": "Love-theme opening · six-note gesture, no accompaniment · F major, C4–C5",
+    "source": "https://imslp.org/wiki/Romeo_and_Juliet_(overture-fantasia),_TH_42_(Tchaikovsky,_Pyotr)",
+    "license": "New event encoding: CC0; source editions retain their own rights",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "range": [
+      60,
+      72
+    ],
+    "starterPack": true
+  },
+  {
+    "id": "yakety-sax",
+    "title": "Yakety Sax · Benny Hill (import your MIDI)",
+    "localOnly": true,
+    "description": "Not bundled. Open a MIDI copy you may use; choose Fold into one octave for practice.",
+    "source": "https://en.wikipedia.org/wiki/Yakety_Sax"
   }
 ]

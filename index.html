@@ -10,10 +10,14 @@
 <a class="skip" href="#instrument">Skip to keyboard</a>
 <header class="topbar">
   <a class="brand" href="./"><span class="brand-mark" aria-hidden="true">◇</span><span>diamond<span class="brand-sub">A DIFFERENT WAY TO PLAY</span></span></a>
-  <div class="header-actions"><button id="sound-start">Enable sound</button><button id="connect">Connect MIDI</button><button id="fullscreen" aria-label="Toggle fullscreen">⛶</button></div>
+  <div class="header-actions"><button id="sound-start">Enable sound</button><button id="connect">Connect MIDI</button><button id="fullscreen" aria-label="Enter fullscreen" aria-pressed="false">⛶</button></div>
 </header>
 <main>
-  <div class="simple-bar" id="simple-bar" hidden><div><strong id="simple-title"></strong><span id="simple-next" aria-live="polite"></span></div><div class="simple-actions"><button id="simple-restart" title="Restart from the first note" aria-label="Restart melody">↺</button><button id="simple-loop" aria-pressed="false" aria-label="Turn melody loop on" title="Loop off">↻</button><button id="restore-controls" title="Show controls (M or Escape)">☰ Controls</button></div></div>
+  <aside id="fullscreen-invite" class="fullscreen-invite" hidden aria-label="Fullscreen request">
+    <p id="fullscreen-explanation"></p>
+    <div><button id="fullscreen-enter" class="primary">Enter fullscreen</button><button id="fullscreen-dismiss">Not now</button></div>
+  </aside>
+  <div class="simple-bar" id="simple-bar" hidden><div><strong id="simple-title"></strong><span id="simple-next" aria-live="polite"></span></div><div class="simple-actions"><button id="simple-restart" title="Restart from the first note" aria-label="Restart melody">↺</button><button id="simple-loop" aria-pressed="false" aria-label="Turn melody loop on" title="Loop off">↻</button><button id="simple-fullscreen" class="mini-action" title="Enter fullscreen" aria-label="Enter fullscreen" aria-pressed="false">⛶</button><button id="restore-controls" title="Show controls (M or Escape)">☰ Controls</button></div></div>
   <section class="intro"><div><p class="eyebrow">FOLLOW THE LIGHT. FIND THE NOTE.</p><h1 id="song-title">Your next melody starts here.</h1><p id="song-description" class="muted">A piano, seen from another angle.</p></div><span class="badge" id="connection-badge">Touch & mouse ready</span></section>
   <section class="songbar" aria-label="Song selection">
     <label class="grow">Song library<select id="song-select"><option value="">Loading library…</option></select></label>
@@ -22,6 +26,10 @@
     <label>Read as<select id="reading"><option value="melody">Highest note at each onset</option><option value="chords">All notes at each onset</option></select></label>
   </section>
   <div id="notice" class="notice" role="status" hidden></div>
+  <section id="local-import-prompt" class="local-import-prompt" aria-label="Local MIDI required" hidden>
+    <div><strong id="local-import-name"></strong><p id="local-import-description"></p></div>
+    <button id="local-import-open">Open local MIDI</button><button id="local-import-close" aria-label="Dismiss local import notice">Close</button>
+  </section>
   <nav class="viewbar" aria-label="Instrument view">
     <div class="view-switch" role="group" aria-label="Choose keyboard"><button id="view-diamond" aria-pressed="true">◇ Diamond</button><button id="view-piano" aria-pressed="false">▥ Piano</button></div>
     <span class="view-hint">Same melody. Your choice of keyboard.</span>
@@ -58,6 +66,7 @@
       <section><h2>03 / Sound</h2><label class="check"><input id="sound-enabled" type="checkbox" checked> Built-in browser sound</label><label>Instrument<select id="timbre"><option value="piano">Soft piano (synthesised)</option><option value="sine">Pure sine</option><option value="bell">Bell</option></select></label><label>Volume<input id="volume" type="range" min="0" max="100" value="35"></label><label>Optional musical MIDI output<select id="midi-synth"><option value="">None · use browser sound</option></select></label><p class="small muted">Musical notes go here on channel 1. Controller lighting uses a separate output. A browser has no guaranteed “default MIDI synth”; the built-in sound needs no extra software.</p><button id="panic" class="danger">■ All sound off / panic</button></section>
     </div>
   </details>
+  <p class="source-link small muted"><a href="https://github.com/AdrianArtacho/teach_diagonal/blob/main/library/SOURCES.md">Starter melody sources, adaptations & licences ↗</a></p>
   <section class="help"><h2>One note at a time.</h2><p>Load a MIDI melody, then play the lit pad. A wrong note does not move the song forward. Repeated notes need a release and a fresh press. In “All notes” mode, collect each highlighted note in any order. Listen plays a reference; practice waits for you and does not grade rhythm.</p><p>On iPad, use touch and browser sound. For USB MIDI and Launchpad lights, use a browser with Web MIDI support, such as desktop Chrome or Edge. Files opened from your device stay in your browser; they are not uploaded.</p></section>
 </main>
 

@@ -2,7 +2,7 @@
 
 **A different way to play.** Learn a MIDI melody by playing the next illuminated key, using a diamond-shaped Launchpad or an on-screen piano. Developed by **Adrián Artacho**.
 
-Version **2.1.0** adds melody looping, a simple-mode restart button and the built-in **Novation Launchpad** mapping exported by Adrián. Full-width alternate views, simple mode and the mapping editor remain available. The original Max project in `diagonal/`, the `download-sheet` submodule and version-1 artifacts are retained. The browser app does not depend on the Max project or submodule.
+Version **2.2.0** adds a simple-mode fullscreen toggle and five sourced one-octave starter melodies. Melody looping, quick restart, the built-in **Novation Launchpad** mapping, alternate views and the mapping editor remain available. The original Max project in `diagonal/`, the `download-sheet` submodule and version-1 artifacts are retained. The browser app does not depend on the Max project or submodule.
 
 ## Start playing
 
@@ -11,6 +11,32 @@ Open [Diamond](https://adrianartacho.github.io/teach_diagonal/), choose a librar
 The library contains new, simple arrangements of **Ode to Joy** and **Frère Jacques**, plus **Chromatic Walk** and **Diamond Chords**. **Listen** plays a reference using the file's tempo map; its speed is adjustable. Practice is untimed pitch guidance, not rhythm or articulation assessment.
 
 Both views support mouse, multitouch and keyboard. Computer keys `A S D F G H J K` play white keys; `W E T Y U` play black keys. Tab then Enter/Space plays a focused key. Escape silences notes and stops playback.
+
+## Fullscreen and the expanded starter pack
+
+The **⛶** button is now present in both regular and **simple mode**, beside Restart and Loop. It enters native browser fullscreen and changes to an exit control while active. Browser-driven exits also update both buttons; the selected song, loop setting and lesson progress are not reset. Standard and WebKit-prefixed APIs are supported through feature detection, not device-name guessing.
+
+Add **`fullscreen=1`** to a link to request a fullscreen entry screen. Browsers require a user gesture, so this opens a small **Enter fullscreen** invitation, not an automatic permission bypass. Tap once to enter, or **Not now** to dismiss it. Without an explicit `simple`/`clear` setting, a fullscreen link also opens simple view; `simple=0` retains the regular controls. `fullscreen=0` suppresses the invitation. Unsupported or denied fullscreen leaves a playable simple view and explains that browser chrome may remain visible.
+
+[Augustin · piano · loop · fullscreen entry](https://adrianartacho.github.io/teach_diagonal/?song=augustin&view=piano&simple=1&loop=1&fullscreen=1) · [Italian Symphony · diamond · fullscreen entry](https://adrianartacho.github.io/teach_diagonal/?song=mendelssohn-italian&view=diamond&simple=1&fullscreen=1)
+
+The existing demo library is retained. Five additional **short teaching adaptations** fit entirely within C4–C5 without depending on automatic octave folding:
+
+| Library choice | Material included | Range | Notes |
+| --- | --- | --- | --- |
+| Mendelssohn · Italian Symphony | Opening violin gesture from Symphony No. 4, movement I; transposed to C major, not the complete theme | C4–G4 | 11 |
+| O du lieber Augustin | Traditional melody in C major, with the low dominant raised an octave | C4–A4 | 47 |
+| Beethoven · Moonlight Sonata | First four bars of the opening triplet figure, transposed to G minor; not the later upper melody | C4–C5 | 48 |
+| Tchaikovsky · 1812 Overture | A slowed, compact festive finale motif in F major, repeated twice | C4–A4 | 22 |
+| Tchaikovsky · Romeo and Juliet | Six-note opening gesture of the love theme in F major, without the chromatic lead-in or later continuation | C4–C5 | 6 |
+
+Both Tchaikovsky alternatives are included because the requested overture was not identified precisely. These are monophonic reductions, not complete performances, orchestral arrangements, or score facsimiles. Track names/descriptions identify the selected material. The pitches, durations and adaptation notes are editable in `tools/starter-pack.json`. [Source, credit and licence details](library/SOURCES.md) accompany each file; the Moonlight adaptation carries the source engraving's **CC BY-SA 2.5** attribution/share-alike terms. No third-party PDF, accompaniment or MIDI recording is republished.
+
+**Benny Hill / Yakety Sax:** the library contains a clearly labelled **local-import option**, not a bundled copyrighted MIDI or a substitute melody. Selecting it explains the requirement and exposes **Open local MIDI**, while preserving the current song and progress. Open a MIDI copy you may use and select **Fold into one octave** as needed. A direct `?song=yakety-sax` link displays the explanation alongside a valid starter lesson; it does not try to fetch a nonexistent file. No redistribution licence for a new Yakety Sax arrangement was established.
+
+`python3 tools/generate_starter.py` rebuilds the five MIDI files and their index/source entries; **`--check`** detects drift. Both this generator and `generate_demos.py` preserve unrelated library entries. The Pages workflow checks both the starter pack and the saved Launchpad preset before deployment.
+
+**Verification for 2.2.0:** 110 Node tests and 156 Chromium browser checks passed (70 earlier interaction checks, 34 loop/preset checks, 52 fullscreen/starter checks). This includes playback through every new melody, one-octave constraints, monophony, loop return, permission-denied/prefixed fullscreen cases, local-only file handling, and four simple-mode controls at 320–1360 px viewport widths. Native fullscreen entry and exit also succeeded in a separate, unmocked **headless Chromium API** check. This does not establish real iPad/Safari or hardware MIDI behaviour. See `artifacts/verification-v4.json` and `artifacts/browser-verification-v4.json`.
 
 ## Loop mode, quick restart and the bundled preset
 
@@ -38,17 +64,17 @@ The diamond's centre diagonal is **C D E F G A B C**, with **C♯ D♯ F♯ G♯
 
 ## Simple mode and links
 
-Press **Simple mode** or **M** to hide setup, lesson controls, navigation and footer. Only the keyboard, compact song/next-note indicator, **↺ Restart**, **↻ Loop** and **☰ Controls** remain. Click Controls, press M again, or Escape to restore everything without reloading.
+Press **Simple mode** or **M** to hide setup, lesson controls, navigation and footer. Only the keyboard, compact song/next-note indicator, **↺ Restart**, **↻ Loop**, **⛶ Fullscreen** and **☰ Controls** remain. Click Controls, press M again, or Escape to restore everything without reloading.
 
 - [Simple piano](https://adrianartacho.github.io/teach_diagonal/?view=piano&simple=1)
 - [Simple diamond](https://adrianartacho.github.io/teach_diagonal/?view=diamond&simple=1)
 - [Ode to Joy on the simple piano](https://adrianartacho.github.io/teach_diagonal/?song=ode-to-joy&view=piano&simple=1)
 
-URL parameters: `view=diamond|piano`, `simple=1|0`, `loop=1|0`, and alias `clear=1`. A bare `simple` or `simple=true` also works. Explicit URL values override remembered view settings; `simple=0` overrides saved simple mode. View changes update the URL without removing the song or unrelated parameters.
+URL parameters: `view=diamond|piano`, `simple=1|0`, `loop=1|0`, `fullscreen=1|0`, and alias `clear=1`. A bare `simple` or `simple=true` also works. Explicit URL values override remembered view settings; `simple=0` overrides saved simple mode. View changes update the URL without removing the song or unrelated parameters.
 
 **Copy practice link** creates a simple-mode link for the current view, loop setting and repository song. Local MIDI files and personal controller maps are **not embedded in links**; open/import them separately on the other device. A selectable-text fallback is provided when clipboard access is unavailable.
 
-Simple mode fills the **browser viewport** without requesting native fullscreen. The existing ⛶ button separately requests native fullscreen where supported; this requires a user gesture and cannot be granted by a URL. On wide, shallow displays, the diamond's **inactive top/bottom corners are cropped**, rather than shrinking the playable diagonal. All 13 musical pads remain visible at the tested desktop, tablet and phone sizes. In portrait, the complete diamond is centred and spans the available width without stretching square pads.
+Simple mode fills the **browser viewport** without requiring native fullscreen. The ⛶ button, now also visible in simple mode, separately requests native fullscreen. `fullscreen=1` offers a one-tap invitation as described above; a URL cannot grant the required user activation. On wide, shallow displays, the diamond's **inactive top/bottom corners are cropped**, rather than shrinking the playable diagonal. All 13 musical pads remain visible at the tested desktop, tablet and phone sizes. In portrait, the complete diamond is centred and spans the available width without stretching square pads.
 
 ## Learn your Launchpad mapping
 
@@ -95,7 +121,7 @@ Add public songs by placing a MIDI in `library/` and adding an entry to `library
 {"id":"my-song","title":"My song","file":"my-song.mid","description":"A short description"}
 ```
 
-Use a unique ID, relative file path and material you may publish. Link with `?song=my-song`. `python3 tools/generate_demos.py` regenerates the four bundled demos **and overwrites their library index**; review the diff before using it with a customised library.
+Use a unique ID, relative file path and material you may publish. Link with `?song=my-song`. `python3 tools/generate_demos.py` regenerates the original four demos and updates their index entries while preserving other songs. Review the diff before committing changes to a customised library.
 
 ## Sound, iPad and privacy
 
@@ -118,7 +144,7 @@ node --test tests/*.test.mjs
 python3 tests/browser_smoke.py
 ```
 
-Browser checks require Python `playwright` and Chromium at `/usr/bin/chromium`, or set `CHROMIUM`. `browser_smoke.py` runs the v2 regression suite and the new `browser_v3.py` checks. Re-run outputs for the v2 suite are kept in `artifacts/v2-regression-v3/`, not over the original v2 reports. Generated screenshots and reports go to `artifacts/`; older artifact versions are preserved.
+Browser checks require Python `playwright` and Chromium at `/usr/bin/chromium`, or set `CHROMIUM`. `browser_smoke.py` runs the v2, v3 and v4 suites. The v2 harness writes to `artifacts/v2-regression-v3/` by default; the v3 and v4 harnesses write version-named files in `artifacts/`. These test commands regenerate their own local reports/screenshots. Earlier artifact versions are preserved in this release.
 
 **Verified v2 (historical): 71 Node tests and 70 Chromium browser checks passed.** See `artifacts/browser-verification-v2.json` and `artifacts/release-notes-v2.md`. Coverage includes parser/geometry regressions, URL priority, learning and single-key repair, cancellation, mapping migration/import/export, separate input/LED channels, shared progress/chords, and layouts at 1360×1000, 820×1180, 390×844 and 844×390.
 
@@ -126,7 +152,7 @@ Browser checks require Python `playwright` and Chromium at `/usr/bin/chromium`, 
 
 Browser navigation is disabled in the test environment. `tests/harness_v2.py` therefore supplies fixture-backed URL, localStorage, fetch and Web MIDI, evaluating shipped code in isolated module scopes with import/export and URL-source substitutions. It exercises real Chromium DOM/CSS/events but does not test live network navigation, native UI-module loading, or physical hardware. Native imports and pure logic are separately tested with Node. Physical Launchpad ports/LED palettes, real iPad/Safari behaviour and audible latency still require hands-on verification.
 
-Modules: `music.js` (geometry, MIDI parser, lesson engine), `midi.js` (ports/LEDs), `audio.js` (synthesis), `app.js` (shared input/lesson lifecycle), `experience.js` (views/URL), `mapping.js` (validation/JSON), `mapping-ui.js` (staged calibration), `repeat.js` (repeat state/controls), `presets.js` (generated built-in mapping).
+Modules: `music.js` (geometry, MIDI parser, lesson engine), `midi.js` (ports/LEDs), `audio.js` (synthesis), `app.js` (shared input/lesson lifecycle), `experience.js` (views/URL), `fullscreen.js` (native fullscreen and gesture invitation), `mapping.js` (validation/JSON), `mapping-ui.js` (staged calibration), `repeat.js` (repeat state/controls), `presets.js` (generated built-in mapping).
 
 ## References
 

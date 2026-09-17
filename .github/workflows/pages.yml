@@ -21,6 +21,8 @@ jobs:
           node-version: '22'
       - name: Check generated controller preset
         run: node tools/generate_preset.mjs --check
+      - name: Check sourced starter melodies
+        run: python3 tools/generate_starter.py --check
       - name: Test musical geometry, parser and MIDI logic
         run: node --test tests/*.test.mjs
       - name: Stage the static app only
