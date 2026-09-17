@@ -10,7 +10,7 @@ export const isLaunchpad = port => /launchpad|lpmini|lpx/i.test(port?.name || ''
 export class Midi {
   constructor(onMessage, onPorts, onError) {
     Object.assign(this, {onMessage, onPorts, onError});
-    this.cache = new Map(); this.lights = false; this.programmed = false; this.rotation = 0; this.profile = 'mini'; this.custom = {};
+    this.cache = new Map(); this.lights = false; this.programmed = false; this.rotation = 0; this.profile = 'mini'; this.custom = {}; this.testTimer = null;
   }
   async connect(sysex = false) {
     if (!navigator.requestMIDIAccess) throw new Error('Hardware MIDI is unavailable here. Use touch + browser sound, or desktop Chrome/Edge for your Launchpad.');
@@ -47,18 +47,36 @@ export class Midi {
   padFor(note, channel, pads) {
     return pads.find(p => this.padAddress(p) === note && (this.profile !== 'custom' || this.custom[p.id]?.channel === channel));
   }
+  ledAddress(pad) {
+    const v = this.custom[pad.id];
+    return this.profile === 'custom' ? (v ? {note: v.ledNote ?? v.note, channel: v.ledChannel ?? 0} : null)
+      : {note: address(pad.r, pad.c, this.rotation), channel: 0};
+  }
+  setLed(destination, color) {
+    if (!destination) return;
+    const {note, channel} = destination, key = `${channel}:${note}`;
+    if (this.cache.get(key) !== color && this.send(this.out, [144 | channel, note, color])) this.cache.set(key, color);
+  }
   paint(pads, expected, held, wrong, accepted) {
     if (!this.lights) return;
     for (const pad of pads) {
-      const key = this.padAddress(pad); if (key == null) continue;
-      // Mini MK3 palette, channel 1 = steady light. Custom hardware may use a different palette.
       const color = pad.note == null ? 0 : wrong.has(pad.note) ? 5 : held.has(pad.note) || accepted.has(pad.note) ? 21 : expected.includes(pad.note) ? 37 : pad.kind === 'white' ? 1 : 47;
-      if (this.cache.get(key) !== color && this.send(this.out, [144, key, color])) this.cache.set(key, color);
+      this.setLed(this.ledAddress(pad), color);
     }
   }
   clear() {
-    if (this.lights) for (const key of this.cache.keys()) this.send(this.out, [144, key, 0]);
+    clearTimeout(this.testTimer);
+    // Also clear explicitly tested LEDs, even if normal lighting is disabled.
+    for (const key of this.cache.keys()) {
+      const [channel, note] = key.split(':').map(Number); this.send(this.out, [144 | channel, note, 0]);
+    }
     this.cache.clear();
+  }
+  testLed(destination, value = 37) {
+    if (!Number.isInteger(value) || value < 1 || value > 127) throw new Error('LED test velocity must be an integer from 1 to 127.');
+    if (!this.out || this.out.state === 'disconnected') throw new Error('Select a connected LED output first.');
+    this.clear(); this.setLed(destination, value);
+    this.testTimer = setTimeout(() => this.clear(), 650);
   }
   disconnect() {this.clear(); this.live(); this.lights = false; if (this.in) this.in.onmidimessage = null;}
 }

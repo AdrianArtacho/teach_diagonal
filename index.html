@@ -4,7 +4,7 @@
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#141b27"><meta name="description" content="Turn an 8 × 8 Launchpad into a diamond piano. Learn melodies with light, touch, and sound.">
   <title>Diamond · A different way to play</title>
-  <link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="experience.css">
 </head>
 <body>
 <a class="skip" href="#instrument">Skip to keyboard</a>
@@ -13,6 +13,7 @@
   <div class="header-actions"><button id="sound-start">Enable sound</button><button id="connect">Connect MIDI</button><button id="fullscreen" aria-label="Toggle fullscreen">⛶</button></div>
 </header>
 <main>
+  <div class="simple-bar" id="simple-bar" hidden><div><strong id="simple-title"></strong><span id="simple-next" aria-live="polite"></span></div><button id="restore-controls" title="Show controls (M or Escape)">☰ Controls</button></div>
   <section class="intro"><div><p class="eyebrow">FOLLOW THE LIGHT. FIND THE NOTE.</p><h1 id="song-title">Your next melody starts here.</h1><p id="song-description" class="muted">A piano, seen from another angle.</p></div><span class="badge" id="connection-badge">Touch & mouse ready</span></section>
   <section class="songbar" aria-label="Song selection">
     <label class="grow">Song library<select id="song-select"><option value="">Loading library…</option></select></label>
@@ -21,6 +22,12 @@
     <label>Read as<select id="reading"><option value="melody">Highest note at each onset</option><option value="chords">All notes at each onset</option></select></label>
   </section>
   <div id="notice" class="notice" role="status" hidden></div>
+  <nav class="viewbar" aria-label="Instrument view">
+    <div class="view-switch" role="group" aria-label="Choose keyboard"><button id="view-diamond" aria-pressed="true">◇ Diamond</button><button id="view-piano" aria-pressed="false">▥ Piano</button></div>
+    <span class="view-hint">Same melody. Your choice of keyboard.</span>
+    <button id="map-controller">Map controller</button><button id="simple-mode" title="Hide all controls (M)">Simple mode</button><button id="copy-practice-link">Copy practice link</button>
+    <span id="link-status" class="small" role="status"></span><input id="practice-link" readonly hidden aria-label="Practice link to copy">
+  </nav>
   <section class="workspace">
     <div class="instrument-panel" id="instrument" tabindex="-1">
       <div class="panel-heading"><span class="eyebrow">THE DIAMOND KEYBOARD</span><span id="range-label" class="mono">C4 — C5</span></div>
@@ -28,6 +35,7 @@
       <div class="legend"><span><i class="dot next"></i>Next note</span><span><i class="dot played"></i>Played</span><span><i class="dot natural"></i>White keys</span><span><i class="dot accidental"></i>Black keys</span></div>
       <p class="instrument-hint">White keys cross the centre. Black keys sit one diagonal above.<br>Tap the pads, use your Launchpad, or play <kbd>A</kbd>–<kbd>K</kbd> / <kbd>W E T Y U</kbd>.</p>
     </div>
+  <section class="piano-panel" id="piano-panel" hidden aria-label="Piano correspondence"><div class="panel-heading"><span class="eyebrow">THE PIANO KEYBOARD</span><span class="small muted">Touch the illuminated key.</span></div><div id="piano" class="piano" role="group" aria-label="Piano keyboard"></div></section>
     <aside class="practice-panel" aria-label="Practice controls">
       <div class="next-card"><p class="eyebrow" id="next-label">PLAY NEXT</p><div id="next-note" class="next-note">—</div><p id="feedback" aria-live="polite">Choose a melody and play the illuminated note.</p><p id="original-note" class="small muted"></p><button id="hear-note" class="quiet">♪ Hear this note</button></div>
       <div class="progress-heading"><span id="progress-label">Ready</span><span id="score" class="muted">No rush.</span></div>
@@ -42,16 +50,31 @@
       </div>
     </aside>
   </section>
-  <section class="piano-panel" aria-label="Piano correspondence"><div class="panel-heading"><span class="eyebrow">SAME NOTES. ANOTHER PERSPECTIVE.</span><span class="small muted">This keyboard is playable, too.</span></div><div id="piano" class="piano" role="group" aria-label="Piano keyboard"></div></section>
   <details id="settings" class="settings"><summary>Controller & sound settings <span class="muted">Launchpad setup · MIDI routing · calibration</span></summary>
     <div class="settings-grid">
-      <section><h2>01 / Controller</h2><label>MIDI input<select id="midi-in"><option value="">Not connected</option></select></label><label>Input type<select id="input-kind"><option value="pads">8 × 8 pad controller</option><option value="piano">Piano / normal MIDI notes</option></select></label><label>Controller profile<select id="profile"><option value="mini">Launchpad Mini MK3 · Programmer</option><option value="grid">Other Launchpad · 11–88 grid (manual)</option><option value="custom">Custom · learned note mapping</option></select></label><label>Physical rotation<select id="rotation"><option value="0">Default · top-left pad = left tip</option><option value="1">Quarter-turn clockwise</option><option value="2">Half-turn</option><option value="3">Quarter-turn counterclockwise</option></select></label><p id="midi-monitor" class="small mono muted" aria-live="polite">No MIDI messages yet.</p></section>
-      <section><h2>02 / Lights</h2><label>Controller LED output<select id="midi-led"><option value="">None</option></select></label><div class="stack"><button id="programmer">Set Mini MK3 to Programmer + light up</button><button id="lights">Light up (already in Programmer Mode)</button><button id="disconnect">Lights off & return to Live Mode</button></div><p class="small muted">For Mini MK3 choose the <strong>MIDI</strong> port, not DAW. Automatic setup requests SysEx permission. Manual setup: hold Session, then press the bottom Scene Launch button.</p><button id="learn" class="quiet">Learn the 13 playable pads</button><p id="learn-status" class="small muted">For custom controllers; LED colour palettes may differ.</p></section>
+      <section><h2>01 / Controller</h2><label>MIDI input<select id="midi-in"><option value="">Not connected</option></select></label><label>Input type<select id="input-kind"><option value="pads">8 × 8 pad controller</option><option value="piano">Piano / normal MIDI notes</option></select></label><label>Controller profile<select id="profile"><option value="mini">Launchpad Mini MK3 · Programmer</option><option value="grid">Other Launchpad · 11–88 grid (manual)</option><option value="custom">Custom · learned note mapping</option></select></label><label>Physical rotation<select id="rotation"><option value="0">Default · top-left pad = left tip</option><option value="1">Quarter-turn clockwise</option><option value="2">Half-turn</option><option value="3">Quarter-turn counterclockwise</option></select></label><p id="midi-monitor" class="small mono muted" aria-live="polite">No MIDI messages yet.</p><p class="small muted">Wrong notes or layout? Use <strong>Map controller</strong> above. The Mini profile is only a preset, not an assumption about your model.</p></section>
+      <section><h2>02 / Lights</h2><label>Controller LED output<select id="midi-led"><option value="">None</option></select></label><div class="stack"><button id="programmer">Set Mini MK3 to Programmer + light up</button><button id="lights">Light up (already in Programmer Mode)</button><button id="disconnect">Lights off & return to Live Mode</button></div><p class="small muted">For Mini MK3 choose the <strong>MIDI</strong> port, not DAW. Automatic setup requests SysEx permission. Manual setup: hold Session, then press the bottom Scene Launch button.</p><button id="learn" class="quiet">Open mapping editor</button><p id="learn-status" class="small muted">Guided learning, manual note/channel editing, LED tests and JSON import/export.</p></section>
       <section><h2>03 / Sound</h2><label class="check"><input id="sound-enabled" type="checkbox" checked> Built-in browser sound</label><label>Instrument<select id="timbre"><option value="piano">Soft piano (synthesised)</option><option value="sine">Pure sine</option><option value="bell">Bell</option></select></label><label>Volume<input id="volume" type="range" min="0" max="100" value="35"></label><label>Optional musical MIDI output<select id="midi-synth"><option value="">None · use browser sound</option></select></label><p class="small muted">Musical notes go here on channel 1. Controller lighting uses a separate output. A browser has no guaranteed “default MIDI synth”; the built-in sound needs no extra software.</p><button id="panic" class="danger">■ All sound off / panic</button></section>
     </div>
   </details>
   <section class="help"><h2>One note at a time.</h2><p>Load a MIDI melody, then play the lit pad. A wrong note does not move the song forward. Repeated notes need a release and a fresh press. In “All notes” mode, collect each highlighted note in any order. Listen plays a reference; practice waits for you and does not grade rhythm.</p><p>On iPad, use touch and browser sound. For USB MIDI and Launchpad lights, use a browser with Web MIDI support, such as desktop Chrome or Edge. Files opened from your device stay in your browser; they are not uploaded.</p></section>
 </main>
+
+<dialog id="mapping-dialog" aria-labelledby="mapping-title">
+  <div class="map-heading"><div><p class="eyebrow">YOUR CONTROLLER. YOUR MAPPING.</p><h2 id="mapping-title">Map the 13 playable pads</h2></div><button id="map-cancel">Cancel / close</button></div>
+  <p class="small muted">Keep the Launchpad in the mode you will play in. The note number sent by a pad is its <strong>address</strong>, not the piano pitch. Calibration does not change the controller’s hardware mode.</p>
+  <div class="map-connections"><button id="map-connect">Connect MIDI</button><label>Controller input<select id="map-input"><option value="">Choose MIDI input…</option></select></label><label>LED channel for newly learned pads<select id="map-led-channel"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option></select></label></div>
+  <p id="map-monitor" class="mono small" aria-live="polite">Press a pad to see its incoming note number and channel.</p>
+  <div class="map-actions"><button id="map-learn-all" class="primary">Learn all 13 pads</button><button id="map-stop-learn" disabled>Pause learning</button><button id="map-import-button">Import mapping</button><button id="map-export">Export mapping</button><input id="map-import" type="file" accept=".json,application/json" hidden></div>
+  <p id="map-message" class="map-message" role="status"></p>
+  <div class="map-layout">
+    <div><div class="map-stage"><div id="map-diamond" class="map-diamond" role="group" aria-label="Calibration diamond"></div></div><p class="small muted">First the eight white keys, left to right; then the five black keys. Click any labelled pad to relearn just that one. C4–C5 names identify pad roles; your playing octave can still change.</p></div>
+    <div><div class="map-table-scroll"><table class="map-table"><thead><tr><th scope="col">Key</th><th scope="col">Input<br>note</th><th scope="col">Input<br>channel</th><th scope="col">LED<br>note</th><th scope="col">LED<br>channel</th><th scope="col">Test / learn</th></tr></thead><tbody id="map-rows"></tbody></table></div>
+    <p class="small muted">Note numbers: 0–127. Channels: 1–16 here (0–15 in exported JSON). LED addresses may differ from input addresses. LED tests use the selected output only.</p>
+    <label>LED test velocity / colour value<input id="map-test-value" type="number" min="1" max="127" value="37"></label><p class="small muted">LED output: <span id="map-output-name"></span>. Colour palettes are device-specific; input learning alone cannot identify an unknown LED protocol.</p></div>
+  </div>
+  <div class="map-bottom"><span class="small muted">Nothing changes until you apply. Saved locally in this browser.</span><button id="map-apply" class="primary">Apply mapping</button></div>
+</dialog>
 <footer><span>Developed by <a href="https://www.artacho.at/">Adrián Artacho</a></span><span><a href="https://github.com/AdrianArtacho/teach_diagonal#readme">Guide & source ↗</a> · <a href="https://trello.com/c/qEL4LenE/289-diamond">📋 To-Do</a></span></footer>
 <noscript>This keyboard needs JavaScript. Enable it to load melodies and play.</noscript>
 <script type="module" src="src/app.js"></script>

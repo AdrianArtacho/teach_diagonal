@@ -1,13 +1,16 @@
 import {layout, noteName, parseMidi, stepsFor, rangeFor, Practice, WHITE} from './music.js';
 import {Sound} from './audio.js';
 import {Midi, decodeNote, isLaunchpad} from './midi.js';
+import {normalizeMapping} from './mapping.js';
+import {setupExperience} from './experience.js';
 const $ = id => document.getElementById(id);
 const practice = new Practice(), voices = new Map(), wrong = new Set();
 let pads = layout(), base = 60, song = null, catalog = [], free = false, listening = false, listenIndex = 0;
-let playToken = 0, loadToken = 0, learnList = null, learnIndex = 0, errorTimer = 0;
+let playToken = 0, loadToken = 0, errorTimer = 0;
+let experience;
 const timers = new Set();
 let settings = {};
-try {settings = JSON.parse(localStorage.getItem('diamond-v1') || '{}');} catch {}
+try {const stored = JSON.parse(localStorage.getItem('diamond-v1') || '{}'); if (stored && typeof stored === 'object' && !Array.isArray(stored)) settings = stored;} catch {}
 const storedControls = ['reading', 'play-mode', 'range-mode', 'octave', 'transpose', 'speed', 'input-kind', 'profile', 'rotation', 'timbre', 'volume'];
 function save() {
   for (const id of storedControls) settings[id] = $(id).value;
@@ -71,6 +74,9 @@ function render() {
   $('listen').textContent = listening ? '■ Stop' : '▶ Listen';
   for (const id of ['listen', 'restart', 'back', 'next']) $(id).disabled = !practice.steps.length;
   $('hear-note').disabled = !step();
+  $('rotation').disabled = midi.profile === 'custom';
+  $('rotation').title = midi.profile === 'custom' ? 'A learned map already defines physical orientation. Relearn the pads after rotating the controller.' : '';
+  experience?.status();
 }
 function press(note, id, velocity = 96, gesture = false, judge = true) {
   if (!Number.isInteger(note) || note < 0 || note > 127 || voices.has(id)) return;
@@ -193,8 +199,10 @@ function buildKeyboards() {
 }
 const shortcuts = {KeyA:0,KeyW:1,KeyS:2,KeyE:3,KeyD:4,KeyF:5,KeyT:6,KeyG:7,KeyY:8,KeyH:9,KeyU:10,KeyJ:11,KeyK:12};
 window.addEventListener('keydown', event => {
-  if (event.code === 'Escape') {stopListen(); return;}
+  if (event.code === 'Escape') {stopListen(); experience?.escape(); return;}
+  if (experience?.modal()) return;
   if (event.repeat || event.ctrlKey || event.metaKey || event.altKey || /INPUT|SELECT|TEXTAREA/.test(event.target.tagName) || event.target.isContentEditable) return;
+  if (experience?.shortcut(event)) return;
   const offset = shortcuts[event.code]; if (offset == null) return;
   event.preventDefault(); if (listening) stopListen(); press(base + offset, `key:${event.code}`, 96, true);
 });
@@ -207,19 +215,13 @@ function receive(data) {
   const event = decodeNote(data); if (!event) return;
   const {note, channel, velocity, on} = event;
   $('midi-monitor').textContent = `Ch ${channel + 1} · note ${note} · velocity ${velocity} · ${on ? 'ON' : 'OFF'}`;
-  if (learnList && on) {
-    if (Object.values(midi.custom).some(v => v.note === note)) {notice('That MIDI note was already learned. Press a different pad.'); return;}
-    midi.custom[learnList[learnIndex].id] = {note, channel};
-    $(`pad-${learnList[learnIndex].id}`).classList.remove('learning'); learnIndex++;
-    if (learnIndex === learnList.length) {learnList = null; $('learn-status').textContent = 'All 13 pads learned and saved on this browser.'; $('learn').textContent = 'Learn the 13 playable pads'; save();}
-    else showLearn();
-    return;
-  }
+  if (experience?.receive(event)) return;
   const id = `midi:${channel}:${note}`;
   if (!on) {release(id); return;}
   if (listening) stopListen();
   const musical = $('input-kind').value === 'piano' ? note : midi.padFor(note, channel, pads)?.note;
   if (musical != null) press(musical, id, velocity);
+  else if (on && $('input-kind').value === 'pads') $('learn-status').textContent = `Unassigned input: note ${note}, channel ${channel + 1}. Use Map controller to assign it.`;
 }
 function options(select, ports, empty) {
   const previous = select.value; select.replaceChildren(new Option(empty, ''));
@@ -227,6 +229,7 @@ function options(select, ports, empty) {
   if ([...select.options].some(o => o.value === previous)) select.value = previous;
 }
 function refreshPorts() {
+  experience?.refreshPorts();
   options($('midi-in'), midi.ports('inputs'), 'None'); options($('midi-led'), midi.ports('outputs'), 'None');
   options($('midi-synth'), midi.ports('outputs').filter(p => !isLaunchpad(p) && p.id !== midi.out?.id), 'None · use browser sound');
   if (midi.in?.state === 'disconnected' || midi.synth?.state === 'disconnected' || midi.out?.state === 'disconnected') {
@@ -257,14 +260,7 @@ async function enableLights(program) {
   await midi.enable(program); $('connection-badge').textContent = 'Controller lights enabled';
   render(); if (program) later(() => {midi.cache.clear(); render();}, 100);
 }
-function cancelLearn() {
-  learnList = null; document.querySelectorAll('.learning').forEach(b => b.classList.remove('learning'));
-  $('learn').textContent = 'Learn the 13 playable pads';
-}
-function showLearn() {
-  const p = learnList[learnIndex]; $(`pad-${p.id}`).classList.add('learning');
-  $('learn-status').textContent = `${learnIndex + 1} / 13: press the physical pad for ${noteName(p.note)} (outlined on screen).`;
-}
+function cancelLearn() {experience?.cancelLearning();}
 for (let c = 0; c <= 9; c++) $('octave').add(new Option(`${noteName(c * 12)}–${noteName(c * 12 + 12)}`, c * 12));
 $('octave').value = 60;
 for (const id of storedControls) if (settings[id] != null) {
@@ -274,8 +270,8 @@ base = Number($('octave').value); pads = layout(base); free = $('play-mode').val
 $('sound-enabled').checked = settings.sound !== false; sound.enabled = $('sound-enabled').checked;
 sound.timbre = $('timbre').value; sound.setVolume(Number($('volume').value) / 100);
 midi.profile = $('profile').value; midi.rotation = Number($('rotation').value);
-if (settings.custom && typeof settings.custom === 'object') for (const [id, v] of Object.entries(settings.custom)) {
-  if (/^[0-7]-[0-7]$/.test(id) && Number.isInteger(v?.note) && v.note >= 0 && v.note <= 127 && Number.isInteger(v.channel) && v.channel >= 0 && v.channel <= 15) midi.custom[id] = v;
+if (settings.custom) {
+  try {midi.custom = normalizeMapping(settings.custom);} catch(e) {notice(`Saved map needs repair: ${e.message}`);}
 }
 buildKeyboards(); render();
 $('sound-start').onclick = () => {sound.enabled = true; $('sound-enabled').checked = true; sound.unlock().catch(e => notice(e.message)); save();};
@@ -295,13 +291,6 @@ $('midi-synth').onchange = safe(async () => {
 $('profile').onchange = () => {stopListen(); cancelLearn(); midi.clear(); midi.live(); midi.lights = false; midi.profile = $('profile').value; $('connection-badge').textContent = 'Lights off · select Enable lighting'; save(); render();};
 $('rotation').onchange = () => {stopListen(); midi.clear(); midi.rotation = Number($('rotation').value); save(); render();};
 $('input-kind').onchange = () => {stopListen(); save();};
-$('learn').onclick = () => {
-  if (learnList) {cancelLearn(); $('learn-status').textContent = 'Learning cancelled. Partial mapping retained.'; save(); return;}
-  if (!midi.in) {notice('Connect and select a MIDI input before learning.'); return;}
-  stopListen(); midi.clear(); midi.live(); midi.lights = false; midi.profile = 'custom'; $('profile').value = 'custom'; midi.custom = {};
-  learnList = pads.filter(p => p.note != null).sort((a, b) => a.note - b.note); learnIndex = 0;
-  $('learn').textContent = 'Cancel learning'; showLearn();
-};
 $('sound-enabled').onchange = () => {sound.enabled = $('sound-enabled').checked; sound.panic(); $('sound-start').textContent = sound.enabled ? 'Enable sound' : 'Sound muted'; save();};
 $('volume').oninput = () => {sound.setVolume(Number($('volume').value) / 100); save();};
 $('timbre').onchange = () => {sound.panic(); sound.timbre = $('timbre').value; save();};
@@ -333,6 +322,8 @@ $('fullscreen').onclick = safe(async () => {
   else if (document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
   else notice('Fullscreen is unavailable here. On iPad, add this page to the Home Screen for a larger practice view.');
 });
+experience = setupExperience({midi, settings, save, stop:stopListen, render, connect});
+render();
 if (!navigator.requestMIDIAccess) $('connect').title = 'This browser has no Web MIDI. Touch and browser sound work without it.';
 (async () => {
   try {

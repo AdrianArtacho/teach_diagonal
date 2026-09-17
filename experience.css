@@ -1,0 +1,64 @@
+/* v2: one full-width instrument, with shared lesson controls below it. */
+[hidden]{display:none!important}
+.topbar,main,footer{max-width:none;width:100%}
+main{padding:24px clamp(12px,2.2vw,36px)}
+.viewbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 16px}
+.view-switch{display:flex;gap:4px;padding:4px;background:#0d1420;border:1px solid var(--line);border-radius:12px}
+.view-switch button{border-color:transparent;background:transparent;min-width:100px}
+.view-switch button[aria-pressed=true]{background:var(--cyan);color:#112f32}
+.view-hint{flex:1;font-size:.78rem;color:var(--muted)}
+#link-status:empty{display:none}
+#practice-link{width:100%;padding:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.workspace{display:flex;flex-direction:column;gap:18px}
+.instrument-panel{padding:16px 12px;width:100%;position:relative}
+.diamond-stage{width:100%;max-width:none;height:min(96vw,72dvh);min-height:24vw;aspect-ratio:auto;margin:0;overflow:hidden}
+.diamond-shell{position:absolute;left:50%;top:50%;width:69%;height:auto;aspect-ratio:1;padding:1.6%;transform:translate(-50%,-50%) rotate(-45deg);border-radius:2.2vw}
+.diamond{gap:clamp(3px,.65vw,11px)}
+.pad{border-radius:clamp(4px,.65vw,11px)}
+.pad>span{font-size:clamp(.68rem,1.55vw,1.6rem)}
+.piano-panel{width:100%;padding:20px 16px;margin:0}
+.piano{width:100%;max-width:none;height:clamp(210px,38vw,450px)}
+.piano-key{font-size:clamp(.8rem,1.75vw,1.8rem);padding-bottom:24px}
+.piano-key.black{font-size:clamp(.7rem,1.5vw,1.5rem)}
+.practice-panel{display:grid;grid-template-columns:minmax(220px,1fr) minmax(250px,1fr) minmax(270px,1.2fr);grid-template-rows:auto auto auto 1fr;gap:10px 22px}
+.next-card{grid-column:1;grid-row:1/5;min-height:0}
+.progress-heading{grid-column:2;grid-row:1;margin:0;align-self:end}
+progress{grid-column:2;grid-row:2;margin:0}
+.upcoming{grid-column:2;grid-row:3;margin:0}
+.transport{grid-column:2;grid-row:4;align-items:start}
+.practice-options{grid-column:3;grid-row:1/5;grid-template-columns:1fr 1fr;margin:0;align-content:start}
+.practice-options>.two-col,.practice-options>label:last-child{grid-column:1/-1}
+.simple-bar{display:flex;gap:15px;justify-content:space-between;align-items:center;height:68px;padding:8px max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left));background:#101620;z-index:3}
+.simple-bar>div{min-width:0}.simple-bar strong{font-size:.95rem;display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.simple-bar span{display:block;color:var(--cyan);font-size:.74rem;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.simple-bar button{flex-shrink:0}
+.simple .topbar,.simple .intro,.simple .songbar,.simple .viewbar,.simple .practice-panel,.simple .settings,.simple .help,.simple footer,.simple .panel-heading,.simple .legend,.simple .instrument-hint{display:none!important}
+.simple main{padding:0}
+.simple .workspace{gap:0}
+.simple .instrument-panel,.simple .piano-panel{border:0;border-radius:0;padding:0;background:var(--bg)}
+.simple .diamond-stage{height:calc(100dvh - 68px - env(safe-area-inset-bottom));min-height:24vw;width:100%;margin:0}
+.simple .piano{height:calc(100dvh - 80px - env(safe-area-inset-bottom));width:calc(100% - max(12px,env(safe-area-inset-left)) - max(12px,env(safe-area-inset-right)));margin:0 auto 12px}
+.simple .notice{margin:4px 12px;font-size:.8rem}.simple .skip:not(:focus){display:none}
+#mapping-dialog{color:var(--ink);background:var(--panel);border:1px solid #4f6677;border-radius:18px;width:min(1120px,96vw);max-width:96vw;max-height:94dvh;padding:22px;overscroll-behavior:contain}
+#mapping-dialog::backdrop{background:#060c16c9}
+.map-heading{display:flex;justify-content:space-between;gap:12px;align-items:center}.map-heading h2{font-size:1.4rem;margin:0}
+.map-connections{display:flex;align-items:end;gap:14px;flex-wrap:wrap}.map-connections>label{flex:1;min-width:180px}
+.map-actions{display:flex;gap:8px;flex-wrap:wrap}
+.map-message{padding:12px 15px;border:1px solid #77e2df55;background:#77e2df0c;border-radius:8px;color:var(--cyan);font-size:.9rem;min-height:50px}
+.map-message.error{color:var(--red);border-color:var(--red)}
+.map-layout{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(480px,1.2fr);gap:24px}
+.map-stage{width:100%;aspect-ratio:1;position:relative;display:grid;place-items:center}
+.map-diamond{width:68%;aspect-ratio:1;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);gap:4px;transform:rotate(-45deg)}
+.map-pad{min-height:0;min-width:0;padding:0;border-radius:4px;aspect-ratio:1;touch-action:manipulation}
+.map-pad>span{transform:rotate(45deg);font-size:.7rem;pointer-events:none;font-weight:650}
+.map-pad.white{background:var(--white);color:#192536}.map-pad.black{background:#302e43;color:#eadfff;border-color:#807396}.map-pad.unused{opacity:.35}
+.map-pad.learning{background:var(--cyan);color:#102e32;outline:3px solid #d4fffe}
+.map-table-scroll{width:100%;overflow:auto}
+.map-table{width:100%;border-collapse:collapse;font-size:.74rem}
+.map-table th,.map-table td{padding:5px 4px;text-align:left;border-bottom:1px solid var(--line)}
+.map-table th{font-weight:600;color:var(--muted)}.map-table input{width:67px;min-height:35px;padding:5px}
+.map-table button{font-size:.7rem;min-height:34px;padding:5px;margin:1px}
+.map-table .learning-row{background:#77e2df18}
+#map-test-value{max-width:100px}
+.map-bottom{display:flex;justify-content:space-between;gap:12px;align-items:center;position:sticky;bottom:-22px;background:var(--panel);padding:15px 0 5px;border-top:1px solid var(--line);margin-top:15px}
+@media(max-width:1000px){.practice-panel{grid-template-columns:1fr 1fr;grid-template-rows:auto auto auto auto}.practice-options{grid-column:2;grid-row:5}.next-card{grid-column:1;grid-row:1/6}.map-layout{grid-template-columns:1fr}.map-stage{max-width:360px;margin:auto}.map-layout>div>p{max-width:none}}
+@media(max-width:650px){.viewbar{gap:8px}.view-hint{display:none}.viewbar>button{flex:1;font-size:.74rem}.view-switch{width:100%}.view-switch button{flex:1}.practice-panel{display:flex;flex-direction:column;padding:16px}.practice-options{display:grid}.next-card #feedback{max-width:none}.next-card #hear-note{position:static}.instrument-panel{padding:12px 4px}.pad>span{font-size:clamp(.66rem,2.6vw,.9rem)}.legend{font-size:.63rem;gap:10px}.piano-panel{padding:16px 6px}.piano{height:42dvh}.piano-key{padding-bottom:16px}.simple-bar strong{font-size:.84rem}.simple-bar span{font-size:.64rem}.simple-bar button{font-size:.75rem}#mapping-dialog{padding:14px}.map-heading h2{font-size:1.15rem}.map-bottom{bottom:-14px}.map-table{min-width:510px}.map-connections>label{min-width:135px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}

@@ -1,112 +1,122 @@
 # [Diamond](https://adrianartacho.github.io/teach_diagonal/)
 
-**A different way to play.** Turn an 8 × 8 Launchpad into a diamond-shaped piano: white keys cross the centre, black keys sit on the next diagonal above. Load a melody, follow the illuminated note, and play at your own pace.
+**A different way to play.** Learn a MIDI melody by playing the next illuminated key, using a diamond-shaped Launchpad or an on-screen piano. Developed by **Adrián Artacho**.
 
-Browser iteration of **teach_diagonal**, developed by **Adrián Artacho**. The original Max project under `diagonal/` and the `download-sheet` submodule are retained; the browser app does not depend on either.
+Version **2.0.0** adds full-width alternate views, a controls-hidden practice mode, and a staged controller mapping editor. The original Max project in `diagonal/`, the `download-sheet` submodule and version-1 artifacts are retained. The browser app does not depend on the Max project or submodule.
 
 ## Start playing
 
-Open **[Diamond](https://adrianartacho.github.io/teach_diagonal/)** and choose a library song, or use **Open MIDI file** for a `.mid` / `.midi` file on your device. Press **Enable sound**, then tap the highlighted diamond pad or its matching piano key. A correct note advances the melody; a wrong note leaves the current step in place. Repeated notes require release and a fresh press.
+Open [Diamond](https://adrianartacho.github.io/teach_diagonal/), choose a library song or **Open MIDI file**, and press **Enable sound**. Tap the highlighted pad/key. A correct note advances the melody; a wrong note does not. Repeated notes require a release and a fresh press.
 
-Both keyboards support mouse and multitouch. Computer keys `A S D F G H J K` play the white keys, with `W E T Y U` for black keys. Tab followed by Enter/Space also plays a focused key. **Escape** silences notes and stops reference playback.
+The library contains new, simple arrangements of **Ode to Joy** and **Frère Jacques**, plus **Chromatic Walk** and **Diamond Chords**. **Listen** plays a reference using the file's tempo map; its speed is adjustable. Practice is untimed pitch guidance, not rhythm or articulation assessment.
 
-The repository library contains new, simple MIDI arrangements of **Ode to Joy** and **Frère Jacques**, plus **Chromatic Walk** and **Diamond Chords** exercises. **Listen** plays the selected line using the MIDI file's tempo map; its speed is adjustable. Practice itself is untimed: this is pitch guidance, not rhythm or articulation assessment.
+Both views support mouse, multitouch and keyboard. Computer keys `A S D F G H J K` play white keys; `W E T Y U` play black keys. Tab then Enter/Space plays a focused key. Escape silences notes and stops playback.
 
-## Launchpad Mini MK3 setup
+## Two views, one lesson
 
-The default hardware profile targets **Novation Launchpad Mini MK3**. Other models are not assumed to share its SysEx messages.
+**Diamond** and **Piano** are alternate, full-width playing surfaces. Switch with the buttons above the instrument or press **V**. The lesson step, retry count and partially collected chord are retained. Active voices/reference playback are stopped safely during a switch. MIDI input and controller LEDs remain functional in either view.
 
-1. Connect the Launchpad by USB and open the HTTPS site in a browser with Web MIDI support, such as desktop Chrome or Edge. Close other software that might take over the Launchpad or create a MIDI feedback loop.
-2. Press **Connect MIDI** and allow access. Under **Controller & sound settings**, select the **LPMiniMK3 MIDI** input and output, **not the DAW port**. Connecting alone does not send lighting commands.
-3. Choose **Launchpad Mini MK3** and press **Programmer mode + lights**. This asks for the additional SysEx permission and sends the Mini-specific Programmer-mode command. Alternatively, enter Programmer mode on the device yourself, then use **Enable lighting only**, which does not require SysEx permission. On Mini MK3, hold Session for approximately half a second to enter setup, then select Programmer mode with the bottom Scene Launch button.
-4. Rotate the controller 45° counter-clockwise, so the top-left-to-bottom-right physical diagonal reads left to right. The starting C is at its left corner. Change **Physical orientation** in settings when the device is turned another quarter-turn relative to this orientation.
-5. Play the lit pad. The app converts the pad's hardware address into the musical pitch. **Lights off / return to Live** clears the LEDs and returns to Live mode when this app enabled Programmer mode. Page exit also attempts cleanup, but browser termination or cable removal cannot guarantee it; manual return to Live remains available on the controller.
+The piano is a complete practice interface, not a miniature secondary display. Lesson controls sit **below** the instrument rather than taking width alongside it.
 
-Controller LED output and optional synthesizer output are deliberately separate. Do not route the synth back into this app. MIDI note-offs are sent for notes the app starts; pointer cancellation, focus loss, hidden tabs, Escape, and **All notes off** stop active voices.
+The diamond's centre diagonal is **C D E F G A B C**, with **C♯ D♯ F♯ G♯ A♯** on the adjacent diagonal above. There is no black key between E/F or B/C. The other 51 pads are inactive. Default register: **C4–C5, MIDI 60–72**.
 
-### Geometry and mapping
+## Simple mode and links
 
-The default octave is **C4–C5 (MIDI 60–72)**. Coordinates below refer to the unrotated square viewed with the controller's top controls at the top, with rows and columns starting at 0. Mini MK3 Programmer addresses run from 81–88 at the top to 11–18 at the bottom.
+Press **Simple mode** or **M** to hide setup, lesson controls, navigation and footer. Only the keyboard, compact song/next-note indicator and **☰ Controls** remain. Click Controls, press M again, or Escape to restore everything without reloading.
 
-| Piano notes | Grid positions `(row,column)` | Mini MK3 pad addresses |
+- [Simple piano](https://adrianartacho.github.io/teach_diagonal/?view=piano&simple=1)
+- [Simple diamond](https://adrianartacho.github.io/teach_diagonal/?view=diamond&simple=1)
+- [Ode to Joy on the simple piano](https://adrianartacho.github.io/teach_diagonal/?song=ode-to-joy&view=piano&simple=1)
+
+URL parameters: `view=diamond|piano`, `simple=1|0`, and alias `clear=1`. A bare `simple` or `simple=true` also works. Explicit URL values override remembered view settings; `simple=0` overrides saved simple mode. View changes update the URL without removing the song or unrelated parameters.
+
+**Copy practice link** creates a simple-mode link for the current view and repository song. Local MIDI files and personal controller maps are **not embedded in links**; open/import them separately on the other device. A selectable-text fallback is provided when clipboard access is unavailable.
+
+Simple mode fills the **browser viewport** without requesting native fullscreen. The existing ⛶ button separately requests native fullscreen where supported; this requires a user gesture and cannot be granted by a URL. On wide, shallow displays, the diamond's **inactive top/bottom corners are cropped**, rather than shrinking the playable diagonal. All 13 musical pads remain visible at the tested desktop, tablet and phone sizes. In portrait, the complete diamond is centred and spans the available width without stretching square pads.
+
+## Learn your Launchpad mapping
+
+The Mini MK3 profile is a preset, **not an assumption about your exact device**. Keep the Launchpad in the mode you intend to use, then:
+
+1. Click **Map controller**. Connect MIDI and select the controller input inside the editor. Its monitor shows the incoming note number, channel and velocity.
+2. Click **Learn all 13 pads**. Follow the highlighted calibration diamond: the eight white keys from left to right, then the five black keys. Press and release each physical pad once. Its incoming note number is a pad address, not necessarily the piano pitch.
+3. Click **Apply mapping**. This activates the Custom profile, selects pad-controller input mode and saves the map locally. Enable feedback with **Light up** in settings, without changing hardware mode.
+
+To repair only one key, click it on the calibration diamond or use **Learn** on its table row. You can also type **Input note / channel** and **LED note / channel** explicitly. LED and input addresses are independent; the outgoing LED channel is no longer fixed to channel 1. Note numbers are 0–127. The editor shows channels **1–16**; JSON stores **0–15**. New learned pads initially use their input note as LED address and the LED channel chosen above the editor, defaulting to 1.
+
+Each row has a short **LED test**, with an adjustable test velocity/colour value and a timed off message. It uses the selected controller LED output, never the musical synth output. Teaching colours still use the Mini-style velocity palette; learning input notes cannot automatically discover another device's colour scheme or a SysEx-only LED protocol.
+
+Edits are staged: **Cancel / close** preserves the previous saved map. Apply requires all 13 assignments and validates numeric ranges and duplicate input/output destinations. Repeated held note-ons cannot fill successive learning slots. **Export mapping** creates `diamond-pad-map.json`; **Import mapping** stages that file for review and application elsewhere. Existing v1 maps retain their original channel-1 LED defaults. After physically rotating a learned setup, relearn it; the rotation preset is disabled for Custom maps because their physical positions are already explicit.
+
+Calibration does **not** switch hardware mode. While its dialog is open, MIDI does not play sound or advance the lesson. Closing restores the earlier lighting state; applying a new map leaves lighting off until explicitly enabled. Personal mapping files remain local unless you choose to publish them.
+
+### Mini MK3 preset setup
+
+Use a Web MIDI-capable browser, such as desktop Chrome or Edge, on the HTTPS site. Select the **MIDI** input and LED output, **not DAW**. Connect alone does not send lighting commands. **Set Mini MK3 to Programmer + light up** requests SysEx access and sends the Mini-specific mode command. Alternatively, enter Programmer Mode manually and use **Light up** without SysEx permission. On Mini MK3, hold Session to enter setup, then select Programmer using the bottom Scene Launch button.
+
+Default physical orientation: rotate the square 45° counter-clockwise, making its top-left-to-bottom-right diagonal horizontal. Use the rotation selector for other quarter-turns, or learn the actual setup. Coordinates below are the original square, rows/columns starting at zero:
+
+| Keys | Grid positions | Mini MK3 addresses |
 | --- | --- | --- |
 | C D E F G A B C | (0,0), (1,1), (2,2), (3,3), (4,4), (5,5), (6,6), (7,7) | 81, 72, 63, 54, 45, 36, 27, 18 |
 | C♯ D♯ F♯ G♯ A♯ | (0,1), (1,2), (3,4), (4,5), (5,6) | 82, 73, 55, 46, 37 |
 
-There is no black key between E/F or B/C. Only these **13 pads** are musical keys; the remaining 51 stay inactive. Changing register changes the musical pitches, not the physical pad addresses. Note labels use **middle C = C4**; Novation's manual uses a different octave-name convention for its MIDI-address diagrams, which does not change the numeric mapping.
+Changing musical register does not change pad addresses. This app labels middle C as C4; numeric MIDI values matter when comparing other octave naming conventions. The generic **11–88 grid** profile uses the same geometry without Mini-specific SysEx.
 
-The screen shows a turquoise target, green held/accepted notes, and red mistakes. Mini MK3 uses its onboard velocity colour palette; colours on a real unit may look different from the screen. Baseline white keys are dim white and black keys dim blue/purple. This is palette MIDI, not per-pixel RGB SysEx.
+Controller LEDs and musical MIDI output are separate. Do not route the synth output back into the app. Escape, focus loss, hidden tabs, cancelled touches and the panic button end active voices. **Lights off & return to Live Mode** restores Live Mode when this app originally enabled Programmer Mode. Page exit attempts cleanup, but browser termination/cable removal cannot guarantee it.
 
-The **11–88 grid / manual mode** profile offers the same address geometry without sending Mini-specific mode commands. **Learn the 13 playable pads** records incoming note and channel for each highlighted musical key and saves the mapping in this browser. This supports alternative input layouts, but is **not** a universal LED driver: learned lighting still uses Mini-style channel-1 note/palette feedback and must match the other controller's documented protocol. Learning does not modify the hardware's stored configuration.
+## MIDI songs and pitch range
 
-## MIDI files, tracks and range
+Choose a melody **Part**. Initial track selection uses highest average pitch, preferring tracks with at least four pitched notes; it is a heuristic, not melody recognition. **Highest note at each onset** takes the highest note at each exact onset in the selected part(s). Accompaniment at other onsets remains, so track selection matters. **All notes at each onset** collects every highlighted chord pitch in any order without requiring simultaneous playing.
 
-Use **Part** to select a melody track. The initial choice is the track with the highest average pitch (preferring tracks with at least four pitched notes); this is a heuristic, not melody recognition. **Read as: Highest note at each onset** takes the highest note at each exact onset within the selected part(s). Accompaniment notes at other onsets remain, so selecting the right track matters. **All notes at each onset** highlights a chord: collect its pitches in any order to advance, without requiring simultaneous playing.
+The eight white-key diagonal spans one octave. **Follow the octave** moves the visible C-to-C register when needed; chords too wide to fit remain blocked. **Fold into one octave** deliberately discards octave identity/doublings while showing original pitches. **Fixed octave** preserves pitches and reports out-of-range steps instead of skipping them. Transposition is −24 to +24 semitones. Free play does not advance the lesson. The **Piano / normal MIDI notes** input mode accepts musical note numbers instead of Launchpad addresses.
 
-One 8-pad white-key diagonal spans only one octave. The app never silently skips unplayable steps:
+Supported files: Standard MIDI format **0 and 1**, PPQ timing, track names, tempo changes, note-on/off and running status, including velocity-zero note-off. Drum channel 10 is excluded. Format 2 and SMPTE files produce explanatory errors. Limits: 8 MB, 1,024 tracks, 500,000 events. Sustain, program changes, pitch bend, notation and expressive controllers are not interpreted. This is not a complete MIDI workstation. Invalid imports preserve the previously loaded song.
 
-- **Follow the octave:** automatically move the C-to-C register to fit the next note or chord. An octave/register change is visible in both keyboards and the range label. Chords that cannot fit remain blocked.
-- **Fold into one octave:** preserve pitch classes in the selected register; octave identity and octave doublings are deliberately lost. The original pitches are displayed. The exact upper C is retained when it is already the visible C.
-- **Keep the selected octave:** preserve the original pitches and block steps outside the visible range. Change octave manually, choose another part, or use folding.
-
-**Transpose** shifts the selected material by −24 to +24 semitones. **Free play** leaves lesson progress unchanged. The optional **Piano MIDI notes** input mode accepts normal musical note numbers instead of Launchpad pad addresses.
-
-Supported MIDI: Standard MIDI File **format 0 and 1**, PPQ timing, track names, tempo changes, note-on/off, running status, and note-on velocity zero. Drum channel 10 is excluded. Format 2 and SMPTE-timed files produce explanatory errors. The parser imposes an 8 MB file limit, 1,024 tracks and 500,000 events. It does not interpret sustain, program changes, pitch bend, notation, fingering, lyrics or expressive playback controllers. Reference sound uses note durations, not a full MIDI sequencer's instrument/channel rendering. Malformed files are rejected without destroying a previously loaded melody.
-
-## Sound, iPad and privacy
-
-**No synthesizer is required.** Sound comes from a small built-in Web Audio instrument: a soft piano-like additive tone, sine tone, or bell. It is **not a sampled acoustic piano or a General MIDI soundfont**. Web MIDI does not itself guarantee a system/default synthesizer, so browser audio is the portable fallback. The separate **Musical MIDI output** selector can route actual pitches to a connected synth or an OS virtual MIDI destination supplied by your setup.
-
-Tap **Enable sound** after opening the page; browsers require a user gesture to start/resume audio. The first on-screen pad or computer-key gesture also attempts to unlock sound. Hardware MIDI alone may not unlock browser audio.
-
-**iPad practice uses touch plus Web Audio.** Safari on iPad does not currently provide Web MIDI; the virtual instrument remains usable without hardware MIDI. Hardware MIDI availability is detected at runtime, and unavailable/denied access produces an explanation instead of breaking touch practice. The layout has been tested at tablet/mobile viewport sizes, but this version has not been physically tested on an iPad or Launchpad. Fullscreen is browser-dependent; Add to Home Screen can provide a larger view. There is no service worker/offline-install cache in this version: initially loading the site/library needs network access.
-
-Local MIDI files are read in memory on your device, **not uploaded**. No analytics, cloud accounts, third-party fonts, sample downloads or runtime packages are used. Settings, the last library selection, and learned pad mappings use localStorage where allowed; local songs themselves are not retained after reload. The site fetches only its own app and library assets. GitHub still serves/logs requests for those public assets as the host.
-
-## Add songs to the repository library
-
-Copy a MIDI file into `library/` and add an entry to `library/index.json`:
+Add public songs by placing a MIDI in `library/` and adding an entry to `library/index.json`:
 
 ```json
 {"id":"my-song","title":"My song","file":"my-song.mid","description":"A short description"}
 ```
 
-Use a unique `id`, a relative path, and material you have permission to publish. Share a library selection with `?song=my-song`, for example [Chromatic Walk](https://adrianartacho.github.io/teach_diagonal/?song=chromatic-walk). Local file import remains independent of the public library.
+Use a unique ID, relative file path and material you may publish. Link with `?song=my-song`. `python3 tools/generate_demos.py` regenerates the four bundled demos **and overwrites their library index**; review the diff before using it with a customised library.
 
-`python3 tools/generate_demos.py` regenerates the four bundled MIDI files and their index. It intentionally writes those demo files: do not run it to maintain a separately edited library index without reviewing the diff.
+## Sound, iPad and privacy
 
-## Hosting and development
+No external synth is needed. Built-in Web Audio provides a piano-like additive tone, sine or bell: **not a sampled acoustic piano or General MIDI soundfont**. An optional, separate musical MIDI output can route actual pitches to your synth or virtual MIDI destination. Web MIDI itself does not guarantee a default system synthesizer.
 
-Everything the app needs is in `index.html`, `styles.css`, `icon.svg`, `src/` and `library/`. No bundler, package install or server backend is needed at runtime. Relative paths support the GitHub Pages project URL.
+Press Enable sound after opening the page; an on-screen key gesture also attempts audio startup. Hardware MIDI alone may not unlock audio. iPad practice uses touch and Web Audio independently of hardware Web MIDI availability. Unsupported/denied MIDI access does not disable the virtual instrument. Fullscreen support varies. There is no offline service-worker cache; initially loading the site/library needs network access.
 
-**Deployment:** `.github/workflows/pages.yml` runs the Node tests, stages only the browser app into `_site/`, and publishes that artifact with GitHub's Pages actions. In [Settings → Pages](https://github.com/AdrianArtacho/teach_diagonal/settings/pages), use **Source: GitHub Actions**. Run **Test and deploy Diamond** from the Actions tab after changing the source. The workflow avoids recursive submodule checkout on purpose: the older default Pages build failed because `download-sheet` could not be fetched. No old Max files or submodule configuration are removed to fix deployment.
+Local MIDI files are read in memory and **not uploaded**. They are not retained after reload. Settings, library selection and mappings use localStorage when allowed. There are no analytics, cloud accounts, third-party fonts, samples or runtime packages. The app fetches its own site/library assets; GitHub still serves/logs those public requests as host.
 
-For local development:
+## Development, deployment and artifacts
+
+Runtime files: `index.html`, `styles.css`, `experience.css`, `icon.svg`, `src/`, `library/`. No bundler, package install or backend is needed. Relative paths work under the Pages project URL.
+
+In [Settings → Pages](https://github.com/AdrianArtacho/teach_diagonal/settings/pages), choose **Source: GitHub Actions**. `.github/workflows/pages.yml` runs core tests, stages only the app, and deploys it. Recursive submodule checkout is intentionally disabled: the old default Pages build failed fetching `download-sheet`. Nothing from the legacy project was deleted to solve that.
 
 ```sh
 python3 -m http.server 8000
-# Open http://localhost:8000/ in the browser.
-node --test tests/core.test.mjs
+# Open http://localhost:8000/ (not file://).
+node --test tests/*.test.mjs
+python3 tests/browser_smoke.py
 ```
 
-Serve the folder rather than opening `index.html` as `file://`; module imports and library fetches need HTTP. Web MIDI requires a secure context (HTTPS or a trustworthy localhost context).
+Browser checks require Python `playwright` and Chromium at `/usr/bin/chromium`, or set `CHROMIUM`. `browser_smoke.py` runs `browser_v2.py`. Generated screenshots and reports go to `artifacts/`; older artifact versions are preserved.
 
-Source organisation: `music.js` contains geometry, MIDI-file parsing and the practice engine; `midi.js` handles ports, Mini MK3 commands and LED feedback; `audio.js` handles synthesis; `app.js` connects the interface and interaction lifecycle. Runtime dependencies: **none**.
+**Verified v2: 71 Node tests and 70 Chromium browser checks passed.** See `artifacts/browser-verification-v2.json` and `artifacts/release-notes-v2.md`. Coverage includes parser/geometry regressions, URL priority, learning and single-key repair, cancellation, mapping migration/import/export, separate input/LED channels, shared progress/chords, and layouts at 1360×1000, 820×1180, 390×844 and 844×390.
 
-### Tests and artifacts
+Browser navigation is disabled in the test environment. `tests/harness_v2.py` therefore supplies fixture-backed URL, localStorage, fetch and Web MIDI, evaluating shipped code in isolated module scopes with import/export and URL-source substitutions. It exercises real Chromium DOM/CSS/events but does not test live network navigation, native UI-module loading, or physical hardware. Native imports and pure logic are separately tested with Node. Physical Launchpad ports/LED palettes, real iPad/Safari behaviour and audible latency still require hands-on verification.
 
-**40 Node tests and 32 browser smoke checks passed** for this version. The browser harness uses real Chromium rendering and the shipped code, with fixture-backed fetch and simulated Web MIDI. It concatenates ES modules in memory (removing imports/exports) for environments where browser navigation is restricted; it does not independently verify live-network deployment or a physical device. It checks both visual keyboards, lesson progress, repeated notes, chord collection, range policies, local import, exact Mini-mode bytes, LED versus musical routing, cancellation, and responsive overflow. Node tests exercise parser edge cases, geometry and pure-state logic.
+Modules: `music.js` (geometry, MIDI parser, lesson engine), `midi.js` (ports/LEDs), `audio.js` (synthesis), `app.js` (shared input/lesson lifecycle), `experience.js` (views/URL), `mapping.js` (validation/JSON), `mapping-ui.js` (staged calibration).
 
-To reproduce browser checks, install Python's `playwright` package and provide Chromium at `/usr/bin/chromium`, or set `CHROMIUM` to its executable path, then run `python3 tests/browser_smoke.py`. Generated screenshots go to `artifacts/`. The versioned verification report and pad map are also in `artifacts/`; preserve earlier versions when adding later reports.
+## References
 
-**Still requiring hands-on verification:** Mini MK3 USB port names/permissions, physical LED palette/rotation, OS MIDI routing, audible latency, and real iPad multitouch/audio behaviour. No physical-device verification is implied by the automated results.
-
-## Technical references
-
-- [Novation Launchpad Mini MK3 Programmer Reference](https://fael-downloads-prod.focusrite.com/customer/prod/s3fs-public/downloads/Launchpad%20Mini%20-%20Programmers%20Reference%20Manual.pdf): Programmer mode, MIDI port selection, note maps and LED palette.
-- [MDN Web MIDI API](https://developer.mozilla.org/en-US/docs/Web/API/Web_MIDI_API): permissions, secure contexts and browser compatibility.
-- [MDN Web Audio best practices](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Best_practices): audio start/resume and user gestures.
-- [GitHub Pages custom workflows](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages): static artifact deployment.
+- [Novation Mini MK3 Programmer Reference](https://fael-downloads-prod.focusrite.com/customer/prod/s3fs-public/downloads/Launchpad%20Mini%20-%20Programmers%20Reference%20Manual.pdf)
+- [MDN Web MIDI](https://developer.mozilla.org/en-US/docs/Web/API/Web_MIDI_API)
+- [MDN requestFullscreen](https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen)
+- [MDN Web Audio best practices](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Best_practices)
+- [GitHub Pages workflows](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)
 
 ---
 
