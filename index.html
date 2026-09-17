@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#141b27"><meta name="description" content="Turn an 8 × 8 Launchpad into a diamond piano. Learn melodies with light, touch, and sound.">
+  <title>Diamond · A different way to play</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#instrument">Skip to keyboard</a>
+<header class="topbar">
+  <a class="brand" href="./"><span class="brand-mark" aria-hidden="true">◇</span><span>diamond<span class="brand-sub">A DIFFERENT WAY TO PLAY</span></span></a>
+  <div class="header-actions"><button id="sound-start">Enable sound</button><button id="connect">Connect MIDI</button><button id="fullscreen" aria-label="Toggle fullscreen">⛶</button></div>
+</header>
+<main>
+  <section class="intro"><div><p class="eyebrow">FOLLOW THE LIGHT. FIND THE NOTE.</p><h1 id="song-title">Your next melody starts here.</h1><p id="song-description" class="muted">A piano, seen from another angle.</p></div><span class="badge" id="connection-badge">Touch & mouse ready</span></section>
+  <section class="songbar" aria-label="Song selection">
+    <label class="grow">Song library<select id="song-select"><option value="">Loading library…</option></select></label>
+    <label class="upload button" tabindex="0" role="button" id="upload-label">↑ Open MIDI file<input id="file" type="file" accept=".mid,.midi,audio/midi,audio/x-midi" class="sr-only"></label>
+    <label>Part<select id="track"><option value="all">All pitched tracks</option></select></label>
+    <label>Read as<select id="reading"><option value="melody">Highest note at each onset</option><option value="chords">All notes at each onset</option></select></label>
+  </section>
+  <div id="notice" class="notice" role="status" hidden></div>
+  <section class="workspace">
+    <div class="instrument-panel" id="instrument" tabindex="-1">
+      <div class="panel-heading"><span class="eyebrow">THE DIAMOND KEYBOARD</span><span id="range-label" class="mono">C4 — C5</span></div>
+      <div class="diamond-stage"><div class="diamond-shell"><div id="diamond" class="diamond" role="group" aria-label="Diamond keyboard, white keys across the centre"></div></div></div>
+      <div class="legend"><span><i class="dot next"></i>Next note</span><span><i class="dot played"></i>Played</span><span><i class="dot natural"></i>White keys</span><span><i class="dot accidental"></i>Black keys</span></div>
+      <p class="instrument-hint">White keys cross the centre. Black keys sit one diagonal above.<br>Tap the pads, use your Launchpad, or play <kbd>A</kbd>–<kbd>K</kbd> / <kbd>W E T Y U</kbd>.</p>
+    </div>
+    <aside class="practice-panel" aria-label="Practice controls">
+      <div class="next-card"><p class="eyebrow" id="next-label">PLAY NEXT</p><div id="next-note" class="next-note">—</div><p id="feedback" aria-live="polite">Choose a melody and play the illuminated note.</p><p id="original-note" class="small muted"></p><button id="hear-note" class="quiet">♪ Hear this note</button></div>
+      <div class="progress-heading"><span id="progress-label">Ready</span><span id="score" class="muted">No rush.</span></div>
+      <progress id="progress" value="0" max="1" aria-label="Song progress"></progress>
+      <div id="upcoming" class="upcoming" aria-label="Upcoming notes"></div>
+      <div class="transport"><button id="restart" title="Restart the melody">↺ Restart</button><button id="back" aria-label="Previous note">←</button><button id="next" aria-label="Skip to next note">→</button><button id="listen" class="primary">▶ Listen</button></div>
+      <div class="practice-options">
+        <label>Play mode<select id="play-mode"><option value="practice">Wait for the right note</option><option value="free">Free play</option></select></label>
+        <label>Pitch range<select id="range-mode"><option value="follow">Follow the octave</option><option value="fold">Fold into one octave</option><option value="fixed">Fixed octave (exact pitches)</option></select></label>
+        <div class="two-col"><label>Starting octave<select id="octave"></select></label><label>Transpose (semitones)<input id="transpose" type="number" min="-24" max="24" value="0"></label></div>
+        <label>Listen speed <span id="speed-label">100%</span><input id="speed" type="range" min="40" max="150" step="5" value="100"></label>
+      </div>
+    </aside>
+  </section>
+  <section class="piano-panel" aria-label="Piano correspondence"><div class="panel-heading"><span class="eyebrow">SAME NOTES. ANOTHER PERSPECTIVE.</span><span class="small muted">This keyboard is playable, too.</span></div><div id="piano" class="piano" role="group" aria-label="Piano keyboard"></div></section>
+  <details id="settings" class="settings"><summary>Controller & sound settings <span class="muted">Launchpad setup · MIDI routing · calibration</span></summary>
+    <div class="settings-grid">
+      <section><h2>01 / Controller</h2><label>MIDI input<select id="midi-in"><option value="">Not connected</option></select></label><label>Input type<select id="input-kind"><option value="pads">8 × 8 pad controller</option><option value="piano">Piano / normal MIDI notes</option></select></label><label>Controller profile<select id="profile"><option value="mini">Launchpad Mini MK3 · Programmer</option><option value="grid">Other Launchpad · 11–88 grid (manual)</option><option value="custom">Custom · learned note mapping</option></select></label><label>Physical rotation<select id="rotation"><option value="0">Default · top-left pad = left tip</option><option value="1">Quarter-turn clockwise</option><option value="2">Half-turn</option><option value="3">Quarter-turn counterclockwise</option></select></label><p id="midi-monitor" class="small mono muted" aria-live="polite">No MIDI messages yet.</p></section>
+      <section><h2>02 / Lights</h2><label>Controller LED output<select id="midi-led"><option value="">None</option></select></label><div class="stack"><button id="programmer">Set Mini MK3 to Programmer + light up</button><button id="lights">Light up (already in Programmer Mode)</button><button id="disconnect">Lights off & return to Live Mode</button></div><p class="small muted">For Mini MK3 choose the <strong>MIDI</strong> port, not DAW. Automatic setup requests SysEx permission. Manual setup: hold Session, then press the bottom Scene Launch button.</p><button id="learn" class="quiet">Learn the 13 playable pads</button><p id="learn-status" class="small muted">For custom controllers; LED colour palettes may differ.</p></section>
+      <section><h2>03 / Sound</h2><label class="check"><input id="sound-enabled" type="checkbox" checked> Built-in browser sound</label><label>Instrument<select id="timbre"><option value="piano">Soft piano (synthesised)</option><option value="sine">Pure sine</option><option value="bell">Bell</option></select></label><label>Volume<input id="volume" type="range" min="0" max="100" value="35"></label><label>Optional musical MIDI output<select id="midi-synth"><option value="">None · use browser sound</option></select></label><p class="small muted">Musical notes go here on channel 1. Controller lighting uses a separate output. A browser has no guaranteed “default MIDI synth”; the built-in sound needs no extra software.</p><button id="panic" class="danger">■ All sound off / panic</button></section>
+    </div>
+  </details>
+  <section class="help"><h2>One note at a time.</h2><p>Load a MIDI melody, then play the lit pad. A wrong note does not move the song forward. Repeated notes need a release and a fresh press. In “All notes” mode, collect each highlighted note in any order. Listen plays a reference; practice waits for you and does not grade rhythm.</p><p>On iPad, use touch and browser sound. For USB MIDI and Launchpad lights, use a browser with Web MIDI support, such as desktop Chrome or Edge. Files opened from your device stay in your browser; they are not uploaded.</p></section>
+</main>
+<footer><span>Developed by <a href="https://www.artacho.at/">Adrián Artacho</a></span><span><a href="https://github.com/AdrianArtacho/teach_diagonal#readme">Guide & source ↗</a> · <a href="https://trello.com/c/qEL4LenE/289-diamond">📋 To-Do</a></span></footer>
+<noscript>This keyboard needs JavaScript. Enable it to load melodies and play.</noscript>
+<script type="module" src="src/app.js"></script>
+</body></html>

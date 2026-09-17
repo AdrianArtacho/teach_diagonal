@@ -1,0 +1,26 @@
+[
+  {
+    "id": "ode-to-joy",
+    "title": "Ode to Joy",
+    "file": "ode-to-joy.mid",
+    "description": "L. van Beethoven · opening melody · C major"
+  },
+  {
+    "id": "frere-jacques",
+    "title": "Frère Jacques",
+    "file": "frere-jacques.mid",
+    "description": "Traditional · a first melody across the diamond"
+  },
+  {
+    "id": "chromatic-walk",
+    "title": "Chromatic Walk",
+    "file": "chromatic-walk.mid",
+    "description": "Original exercise · discover all five black keys"
+  },
+  {
+    "id": "diamond-chords",
+    "title": "Diamond Chords",
+    "file": "diamond-chords.mid",
+    "description": "Original exercise · choose “All notes at each onset”"
+  }
+]

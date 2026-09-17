@@ -1,0 +1,9 @@
+{
+  "name": "diamond-midi-tutor",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A dependency-free diamond Launchpad keyboard and MIDI melody tutor",
+  "scripts": {"test": "node --test tests/core.test.mjs"},
+  "engines": {"node": ">=20"}
+}

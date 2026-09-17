@@ -1,0 +1,47 @@
+name: Test and deploy Diamond
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: diamond-pages-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test musical geometry, parser and MIDI logic
+        run: node --test tests/core.test.mjs
+      - name: Stage the static app only
+        run: |
+          mkdir -p _site
+          cp index.html styles.css icon.svg .nojekyll _site/
+          cp -R src library _site/
+      - uses: actions/upload-pages-artifact@v4
+        if: github.event_name != 'pull_request'
+        with:
+          path: _site
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

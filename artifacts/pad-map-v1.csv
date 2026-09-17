@@ -1,0 +1,14 @@
+musical_note,musical_midi,row_0_based,column_0_based,mini_mk3_address,kind
+C4,60,0,0,81,white
+C#4,61,0,1,82,black
+D4,62,1,1,72,white
+D#4,63,1,2,73,black
+E4,64,2,2,63,white
+F4,65,3,3,54,white
+F#4,66,3,4,55,black
+G4,67,4,4,45,white
+G#4,68,4,5,46,black
+A4,69,5,5,36,white
+A#4,70,5,6,37,black
+B4,71,6,6,27,white
+C5,72,7,7,18,white
