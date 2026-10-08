@@ -12,16 +12,28 @@
     "description": "Traditional · a first melody across the diamond"
   },
   {
-    "id": "chromatic-walk",
-    "title": "Chromatic Walk",
-    "file": "chromatic-walk.mid",
-    "description": "Original exercise · discover all five black keys"
+    "id": "pink-panther",
+    "title": "Pink Panther theme",
+    "file": "PinkPanther.mid",
+    "description": "Play the legendary movie theme"
   },
   {
-    "id": "diamond-chords",
-    "title": "Diamond Chords",
-    "file": "diamond-chords.mid",
-    "description": "Original exercise · choose “All notes at each onset”"
+    "id": "Schubert-Forelle",
+    "title": "Schubert's Forelle",
+    "file": "Forelle.mid",
+    "description": "Die Forelle"
+  },
+  {
+    "id": "Dschungelbuch",
+    "title": "Probier's mal mit Gemütlichkeit",
+    "file": "JungleBook.mid",
+    "description": "Theme Song"
+  },
+  {
+    "id": "Rocky",
+    "title": "Rocky",
+    "file": "Rocky.mid",
+    "description": "Theme Song"
   },
   {
     "id": "mendelssohn-italian",
@@ -68,7 +80,21 @@
   {
     "id": "tchaikovsky-1812",
     "title": "Tchaikovsky · 1812 Overture",
-    "file": "tchaikovsky-1812.mid",
+    "file": "1812.mid",
+    "description": "Festive finale motif · short, slowed F-major reduction, C4–A4",
+    "source": "https://bandmusicpdf.org/1812overture/",
+    "license": "New event encoding: CC0; source editions retain their own rights",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "range": [
+      60,
+      69
+    ],
+    "starterPack": true
+  },
+  {
+    "id": "tchaikovsky-Schwann",
+    "title": "Tchaikovsky · Schwannensee",
+    "file": "tscaikovsky.mid",
     "description": "Festive finale motif · short, slowed F-major reduction, C4–A4",
     "source": "https://bandmusicpdf.org/1812overture/",
     "license": "New event encoding: CC0; source editions retain their own rights",
@@ -92,6 +118,12 @@
       72
     ],
     "starterPack": true
+  },
+  {
+    "id": "diamond-chords",
+    "title": "Diamond Chords",
+    "file": "diamond-chords.mid",
+    "description": "Original exercise · choose “All notes at each onset”"
   },
   {
     "id": "yakety-sax",
