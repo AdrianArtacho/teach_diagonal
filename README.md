@@ -1,4 +1,4 @@
-# [Diamond](https://adrianartacho.github.io/teach_diagonal/)
+# [Diagonal](https://adrianartacho.github.io/teach_diagonal/)
 
 **A different way to play.** Learn a MIDI melody by playing the next illuminated key, using a diamond-shaped Launchpad or an on-screen piano. Developed by **Adrián Artacho**.
 
@@ -6,7 +6,7 @@ Version **2.2.0** adds a simple-mode fullscreen toggle and five sourced one-octa
 
 ## Start playing
 
-Open [Diamond](https://adrianartacho.github.io/teach_diagonal/), choose a library song or **Open MIDI file**, and press **Enable sound**. Tap the highlighted pad/key. A correct note advances the melody; a wrong note does not. Repeated notes require a release and a fresh press.
+Open [Diagonal](https://adrianartacho.github.io/teach_diagonal/), choose a library song or **Open MIDI file**, and press **Enable sound**. Tap the highlighted pad/key. A correct note advances the melody; a wrong note does not. Repeated notes require a release and a fresh press.
 
 The library contains new, simple arrangements of **Ode to Joy** and **Frère Jacques**, plus **Chromatic Walk** and **Diamond Chords**. **Listen** plays a reference using the file's tempo map; its speed is adjustable. Practice is untimed pitch guidance, not rhythm or articulation assessment.
 
