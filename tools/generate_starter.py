@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Generate the small, sourced teaching MIDIs. Standard library only.
 
-Preserves unrelated entries in library/index.json. --check verifies bytes,
+Preserves unrelated entries and explicit starterPack:false catalog overrides.
+--check verifies bytes,
 metadata, source notes, monophony and the declared single-octave range.
 """
 import argparse
@@ -69,7 +70,9 @@ def generate(check=False):
         entry = {k: s[k] for k in ['id', 'title', 'file', 'description', 'source', 'license', 'license_url']}
         entry['range'] = [min(pitches), max(pitches)]
         entry['starterPack'] = True
-        index = [entry if x['id'] == s['id'] else x for x in index]
+        # A curator can keep the song URL but choose their own uploaded MIDI.
+        # Such entries must opt out explicitly so accidental drift still fails.
+        index = [entry if x['id'] == s['id'] and x.get('starterPack') is not False else x for x in index]
         if not any(x['id'] == s['id'] for x in index): index.append(entry)
         data = encode(s)
         target = ROOT / 'library' / s['file']
@@ -91,7 +94,10 @@ def generate(check=False):
         'you may use; it does not substitute a different melody or silently load a dummy file. '
         '[Work identification](https://en.wikipedia.org/wiki/Yakety_Sax).', '',
         '## Rebuilding', '', '`python3 tools/generate_starter.py` regenerates these files and updates only their index entries; '
-        'unrelated library songs are retained. `--check` detects drift. The editable pitches, rhythms and source notes are in `tools/starter-pack.json`.', '']
+        'unrelated library songs are retained. Set `starterPack: false` on a catalog entry to preserve an intentional '
+        'replacement MIDI and its own metadata under the same song ID. The source and licence notes above apply only '
+        'to the named generated files, not to replacement uploads. `--check` still verifies all generated MIDI bytes '
+        'and managed metadata. The editable pitches, rhythms and source notes are in `tools/starter-pack.json`.', '']
     outputs = {index_path: json.dumps(index, ensure_ascii=False, indent=2)+'\n', ROOT/'library/SOURCES.md':'\n'.join(sources)}
     for path, text in outputs.items():
         if check:

@@ -72,4 +72,4 @@ Melodic cross-check: [score excerpt](https://www.flutetunes.com/tunes/tchaikovsk
 
 ## Rebuilding
 
-`python3 tools/generate_starter.py` regenerates these files and updates only their index entries; unrelated library songs are retained. `--check` detects drift. The editable pitches, rhythms and source notes are in `tools/starter-pack.json`.
+`python3 tools/generate_starter.py` regenerates these files and updates only their index entries; unrelated library songs are retained. Set `starterPack: false` on a catalog entry to preserve an intentional replacement MIDI and its own metadata under the same song ID. The source and licence notes above apply only to the named generated files, not to replacement uploads. `--check` still verifies all generated MIDI bytes and managed metadata. The editable pitches, rhythms and source notes are in `tools/starter-pack.json`.

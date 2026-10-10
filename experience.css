@@ -32,10 +32,13 @@ progress{grid-column:2;grid-row:2;margin:0}
 .simple-bar>div{min-width:0}.simple-bar strong{font-size:.95rem;display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.simple-bar span{display:block;color:var(--cyan);font-size:.74rem;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.simple-bar button{flex-shrink:0}
 .simple .topbar,.simple .intro,.simple .songbar,.simple .viewbar,.simple .practice-panel,.simple .settings,.simple .help,.simple footer,.simple .panel-heading,.simple .legend,.simple .instrument-hint{display:none!important}
 .simple main{padding:0}
+.simple-songbar{display:none}
+.simple .simple-songbar{display:block;height:58px;padding:0 max(12px,env(safe-area-inset-right)) 16px max(12px,env(safe-area-inset-left))}
+.simple-songbar select{font-size:1rem;text-overflow:ellipsis}
 .simple .workspace{gap:0}
 .simple .instrument-panel,.simple .piano-panel{border:0;border-radius:0;padding:0;background:var(--bg)}
-.simple .diamond-stage{height:calc(100dvh - 68px - env(safe-area-inset-bottom));min-height:24vw;width:100%;margin:0}
-.simple .piano{height:calc(100dvh - 80px - env(safe-area-inset-bottom));width:calc(100% - max(12px,env(safe-area-inset-left)) - max(12px,env(safe-area-inset-right)));margin:0 auto 12px}
+.simple .diamond-stage{height:calc(100dvh - 126px - env(safe-area-inset-bottom));min-height:24vw;width:100%;margin:0}
+.simple .piano{height:calc(100dvh - 138px - env(safe-area-inset-bottom));width:calc(100% - max(12px,env(safe-area-inset-left)) - max(12px,env(safe-area-inset-right)));margin:0 auto 12px}
 .simple .notice{margin:4px 12px;font-size:.8rem}.simple .skip:not(:focus){display:none}
 #mapping-dialog{color:var(--ink);background:var(--panel);border:1px solid #4f6677;border-radius:18px;width:min(1120px,96vw);max-width:96vw;max-height:94dvh;padding:22px;overscroll-behavior:contain}
 #mapping-dialog::backdrop{background:#060c16c9}

@@ -18,6 +18,7 @@
     <div><button id="fullscreen-enter" class="primary">Enter fullscreen</button><button id="fullscreen-dismiss">Not now</button></div>
   </aside>
   <div class="simple-bar" id="simple-bar" hidden><div><strong id="simple-title"></strong><span id="simple-next" aria-live="polite"></span></div><div class="simple-actions"><button id="simple-restart" title="Restart from the first note" aria-label="Restart melody">↺</button><button id="simple-loop" aria-pressed="false" aria-label="Turn melody loop on" title="Loop off">↻</button><button id="simple-fullscreen" class="mini-action" title="Enter fullscreen" aria-label="Enter fullscreen" aria-pressed="false">⛶</button><button id="restore-controls" title="Show controls (M or Escape)">☰ Controls</button></div></div>
+  <label class="simple-songbar"><span class="sr-only">Song library</span><select id="simple-song-select"><option value="">Loading library…</option></select></label>
   <section class="intro"><div><p class="eyebrow">FOLLOW THE LIGHT. FIND THE NOTE.</p><h1 id="song-title">Your next melody starts here.</h1><p id="song-description" class="muted">A piano, seen from another angle.</p></div><span class="badge" id="connection-badge">Touch & mouse ready</span></section>
   <section class="songbar" aria-label="Song selection">
     <label class="grow">Song library<select id="song-select"><option value="">Loading library…</option></select></label>

@@ -2,7 +2,7 @@
 
 **A different way to play.** Learn a MIDI melody by playing the next illuminated key, using a diamond-shaped Launchpad or an on-screen piano. Developed by **Adrián Artacho**.
 
-Version **2.2.0** adds a simple-mode fullscreen toggle and five sourced one-octave starter melodies. Melody looping, quick restart, the built-in **Novation Launchpad** mapping, alternate views and the mapping editor remain available. The original Max project in `diagonal/`, the `download-sheet` submodule and version-1 artifacts are retained. The browser app does not depend on the Max project or submodule.
+Version **2.2.0** adds a simple-mode fullscreen toggle and five sourced one-octave starter melodies. Melody looping, quick restart, the built-in **Novation Launchpad** mapping, alternate views and the mapping editor remain available. The original Max project in `diagonal/` and version-1 artifacts are retained. The browser app does not depend on the Max project.
 
 ## Start playing
 
@@ -30,11 +30,13 @@ The existing demo library is retained. Five additional **short teaching adaptati
 | Tchaikovsky · 1812 Overture | A slowed, compact festive finale motif in F major, repeated twice | C4–A4 | 22 |
 | Tchaikovsky · Romeo and Juliet | Six-note opening gesture of the love theme in F major, without the chromatic lead-in or later continuation | C4–C5 | 6 |
 
+The table describes the generated starter files. The current library choice for **1812 Overture** uses the separately uploaded `1812.mid` (C4–B4); the original generated `tchaikovsky-1812.mid` remains available in the repository.
+
 Both Tchaikovsky alternatives are included because the requested overture was not identified precisely. These are monophonic reductions, not complete performances, orchestral arrangements, or score facsimiles. Track names/descriptions identify the selected material. The pitches, durations and adaptation notes are editable in `tools/starter-pack.json`. [Source, credit and licence details](library/SOURCES.md) accompany each file; the Moonlight adaptation carries the source engraving's **CC BY-SA 2.5** attribution/share-alike terms. No third-party PDF, accompaniment or MIDI recording is republished.
 
 **Benny Hill / Yakety Sax:** the library contains a clearly labelled **local-import option**, not a bundled copyrighted MIDI or a substitute melody. Selecting it explains the requirement and exposes **Open local MIDI**, while preserving the current song and progress. Open a MIDI copy you may use and select **Fold into one octave** as needed. A direct `?song=yakety-sax` link displays the explanation alongside a valid starter lesson; it does not try to fetch a nonexistent file. No redistribution licence for a new Yakety Sax arrangement was established.
 
-`python3 tools/generate_starter.py` rebuilds the five MIDI files and their index/source entries; **`--check`** detects drift. Both this generator and `generate_demos.py` preserve unrelated library entries. The Pages workflow checks both the starter pack and the saved Launchpad preset before deployment.
+`python3 tools/generate_starter.py` rebuilds the five MIDI files and their index/source entries; **`--check`** detects drift. Set **`starterPack: false`** on a catalog entry to keep an intentional replacement MIDI under an existing starter song ID, together with its own description and metadata. The original generated MIDI files remain checked. Both this generator and `generate_demos.py` preserve unrelated library entries. The Pages workflow checks both the starter pack and the saved Launchpad preset before deployment.
 
 **Verification for 2.2.0:** 110 Node tests and 156 Chromium browser checks passed (70 earlier interaction checks, 34 loop/preset checks, 52 fullscreen/starter checks). This includes playback through every new melody, one-octave constraints, monophony, loop return, permission-denied/prefixed fullscreen cases, local-only file handling, and four simple-mode controls at 320–1360 px viewport widths. Native fullscreen entry and exit also succeeded in a separate, unmocked **headless Chromium API** check. This does not establish real iPad/Safari or hardware MIDI behaviour. See `artifacts/verification-v4.json` and `artifacts/browser-verification-v4.json`.
 
@@ -64,7 +66,7 @@ The diamond's centre diagonal is **C D E F G A B C**, with **C♯ D♯ F♯ G♯
 
 ## Simple mode and links
 
-Press **Simple mode** or **M** to hide setup, lesson controls, navigation and footer. Only the keyboard, compact song/next-note indicator, **↺ Restart**, **↻ Loop**, **⛶ Fullscreen** and **☰ Controls** remain. Click Controls, press M again, or Escape to restore everything without reloading.
+Press **Simple mode** or **M** to hide setup, lesson controls, navigation and footer. The keyboard, compact song/next-note indicator, **Song library** dropdown, **↺ Restart**, **↻ Loop**, **⛶ Fullscreen** and **☰ Controls** remain. Choose any library entry from the dropdown above the keyboard without leaving simple mode or fullscreen. A new song starts at its first note while keeping the instrument view, loop setting and controller setup. Both song menus stay synchronized; local MIDI imports are labelled with their filename. Click Controls, press M again, or Escape to restore everything without reloading.
 
 - [Simple piano](https://adrianartacho.github.io/teach_diagonal/?view=piano&simple=1)
 - [Simple diamond](https://adrianartacho.github.io/teach_diagonal/?view=diamond&simple=1)
@@ -145,6 +147,8 @@ python3 tests/browser_smoke.py
 ```
 
 Browser checks require Python `playwright` and Chromium at `/usr/bin/chromium`, or set `CHROMIUM`. `browser_smoke.py` runs the v2, v3 and v4 suites. The v2 harness writes to `artifacts/v2-regression-v3/` by default; the v3 and v4 harnesses write version-named files in `artifacts/`. These test commands regenerate their own local reports/screenshots. Earlier artifact versions are preserved in this release.
+
+The focused song-selector regression uses Node Playwright: run `node tests/browser_song_picker.mjs` after installing `playwright` and its Chromium browser. Set `CHROMIUM_EXECUTABLE_PATH` to reuse an existing Chromium installation. It serves the app locally and checks both views, song loading, local imports, failed and rapid selections, fullscreen preservation, and phone layouts.
 
 **Verified v2 (historical): 71 Node tests and 70 Chromium browser checks passed.** See `artifacts/browser-verification-v2.json` and `artifacts/release-notes-v2.md`. Coverage includes parser/geometry regressions, URL priority, learning and single-key repair, cancellation, mapping migration/import/export, separate input/LED channels, shared progress/chords, and layouts at 1360×1000, 820×1180, 390×844 and 844×390.
 

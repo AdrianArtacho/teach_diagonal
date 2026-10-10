@@ -1,7 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
-import {execFileSync} from 'node:child_process';
+import {readFileSync, writeFileSync, mkdtempSync, cpSync, rmSync} from 'node:fs';
+import {execFileSync, spawnSync} from 'node:child_process';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
 import {fullscreenRequested} from '../src/fullscreen.js';
 import {viewOptions, viewURL} from '../src/experience.js';
 import {parseMidi, stepsFor} from '../src/music.js';
@@ -35,7 +37,12 @@ for (const entry of manifest.songs) test(`${entry.id}: generated pitches, onset 
  }
  for(let j=1;j<notes.length;j++) assert.ok(notes[j-1].endTick<=notes[j].tick);
  assert.ok(stepsFor(song).every(step=>step.notes.length===1));
- const catalog=index.find(x=>x.id===entry.id);assert.ok(catalog?.file);assert.ok(catalog.source);assert.ok(catalog.license);
+ const catalog=index.find(x=>x.id===entry.id);assert.ok(catalog?.file);
+ if (catalog.starterPack === false) {
+  assert.notEqual(catalog.file,entry.file,'A custom replacement should use its own MIDI file');
+ } else {
+  assert.equal(catalog.starterPack,true);assert.equal(catalog.file,entry.file);assert.ok(catalog.source);assert.ok(catalog.license);
+ }
 });
 test('every public library entry is either playable or explicitly local-only',()=>{
  assert.equal(new Set(index.map(x=>x.id)).size,index.length);
@@ -49,10 +56,28 @@ test('Moonlight credit states source engraving and share-alike licence',()=>{
  const entry=manifest.songs.find(x=>x.id==='moonlight');assert.equal(entry.license,'CC BY-SA 2.5');assert.match(entry.credit,/Stewart Holmes/);
  assert.match(entry.description,/triplet/);assert.match(read('library/SOURCES.md').toString(),/creativecommons.org\/licenses\/by-sa\/2.5/);
 });
-test('all existing four library demos remain present',()=>{
- for(const id of ['ode-to-joy','frere-jacques','chromatic-walk','diamond-chords']) assert.ok(index.find(x=>x.id===id)?.file);
+test('all four original demo files remain playable independently of catalog selection',()=>{
+ for(const id of ['ode-to-joy','frere-jacques','chromatic-walk','diamond-chords']) assert.ok(stepsFor(parseMidi(read(`library/${id}.mid`))).length>0);
 });
 test('starter generator drift check succeeds',()=>execFileSync('python3',['tools/generate_starter.py','--check'],{cwd:root,stdio:'pipe'}));
+test('starter regeneration preserves custom catalog replacements and still detects generated drift',()=>{
+ const temp=mkdtempSync(join(tmpdir(),'diagonal-starter-'));
+ try {
+  for(const dir of ['tools','library']) cpSync(new URL(dir,root),join(temp,dir),{recursive:true});
+  const run=(...args)=>execFileSync('python3',['tools/generate_starter.py',...args],{cwd:temp,stdio:'pipe'});
+  run();
+  assert.deepEqual(JSON.parse(readFileSync(join(temp,'library/index.json'))),index);
+  run('--check');
+  const changed=structuredClone(index);changed.find(x=>x.id==='augustin').title='Unintended generated change';
+  writeFileSync(join(temp,'library/index.json'),JSON.stringify(changed,null,2)+'\n');
+  const metadata=spawnSync('python3',['tools/generate_starter.py','--check'],{cwd:temp,encoding:'utf8'});
+  assert.notEqual(metadata.status,0);assert.match(metadata.stderr,/Stale generated file: index.json/);
+  run();
+  writeFileSync(join(temp,'library/tchaikovsky-1812.mid'),Buffer.from('broken generated MIDI'));
+  const midi=spawnSync('python3',['tools/generate_starter.py','--check'],{cwd:temp,encoding:'utf8'});
+  assert.notEqual(midi.status,0);assert.match(midi.stderr,/Stale MIDI: tchaikovsky-1812.mid/);
+ } finally {rmSync(temp,{recursive:true,force:true});}
+});
 test('CI checks starter data before deployment',()=>assert.match(read('.github/workflows/pages.yml').toString(),/generate_starter.py --check/));
 test('both layouts include a fullscreen toggle and startup asks for a gesture',()=>{
  const html=read('index.html').toString();for(const id of ['fullscreen','simple-fullscreen','fullscreen-enter','fullscreen-dismiss']) assert.ok(html.includes(`id="${id}"`));
