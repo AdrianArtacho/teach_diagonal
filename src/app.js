@@ -6,6 +6,7 @@ import {setupExperience} from './experience.js';
 import {Repeat, setupRepeat} from './repeat.js';
 import {setupFullscreen} from './fullscreen.js';
 const $ = id => document.getElementById(id);
+const songSelectIds = ['song-select', 'simple-song-select'];
 const practice = new Practice(), voices = new Map(), wrong = new Set();
 let pads = layout(), base = 60, song = null, catalog = [], free = false, listening = false, listenIndex = 0;
 let playToken = 0, loadToken = 0, errorTimer = 0;
@@ -127,6 +128,14 @@ function rebuild() {
   } catch (e) {practice.reset([]); notice(e.message);}
   render(); save();
 }
+function syncSongSelectors(id = currentLibraryId) {
+  for (const selectId of songSelectIds) {
+    const select = $(selectId), placeholder = select.options[0];
+    placeholder.textContent = song && !currentLibraryId ? `Local MIDI · ${$('song-title').textContent}` : 'Choose a song…';
+    placeholder.disabled = true;
+    select.value = id;
+  }
+}
 function setSong(bytes, title, description, id) {
   const parsed = parseMidi(bytes); // Invalid files do not destroy the currently loaded song.
   $('local-import-prompt').hidden = true; currentLibraryId = id || '';
@@ -140,24 +149,32 @@ function setSong(bytes, title, description, id) {
   $('track').value = String((candidates.length ? candidates : tracks).sort((a, b) => avg(b) - avg(a))[0].index);
   if (id) {settings.song = id; const url = new URL(location.href); url.searchParams.set('song', id); try {history.replaceState(null, '', url);} catch { /* Sandboxed embeds may not allow URL updates. */ }}
   else {const url = new URL(location.href); url.searchParams.delete('song'); try {history.replaceState(null, '', url);} catch { /* Sandboxed embeds may not allow URL updates. */ }}
-  rebuild();
+  syncSongSelectors(); rebuild();
 }
 function showLocalImport(entry) {
   $('local-import-name').textContent = entry.title;
   $('local-import-description').textContent = entry.description;
   $('local-import-prompt').hidden = false;
-  $('song-select').value = currentLibraryId;
+  syncSongSelectors();
   // Keep the current song, lesson progress and saved library selection unchanged.
 }
 async function loadLibrary(id) {
   const ticket = ++loadToken, entry = catalog.find(e => e.id === id); if (!entry) return;
   if (entry.localOnly) {showLocalImport(entry); return;}
-  if (typeof entry.file !== 'string' || !entry.file) throw new Error('This library entry has no MIDI file.');
-  const url = new URL(entry.file, new URL('library/', document.baseURI));
-  if (url.origin !== new URL(document.baseURI).origin) throw new Error('Library songs must be hosted with this app.');
-  const res = await fetch(url); if (!res.ok) throw new Error(`Could not load ${entry.title} (HTTP ${res.status}).`);
-  const bytes = await res.arrayBuffer(); if (ticket !== loadToken) return;
-  setSong(bytes, entry.title, entry.description || 'From the song library', entry.id); $('song-select').value = id;
+  syncSongSelectors(id);
+  try {
+    if (typeof entry.file !== 'string' || !entry.file) throw new Error('This library entry has no MIDI file.');
+    const url = new URL(entry.file, new URL('library/', document.baseURI));
+    if (url.origin !== new URL(document.baseURI).origin) throw new Error('Library songs must be hosted with this app.');
+    const res = await fetch(url); if (!res.ok) throw new Error(`Could not load ${entry.title} (HTTP ${res.status}).`);
+    const bytes = await res.arrayBuffer(); if (ticket !== loadToken) return;
+    setSong(bytes, entry.title, entry.description || 'From the song library', entry.id);
+  } catch (e) {
+    if (ticket === loadToken) throw e;
+  } finally {
+    // A failed or superseded load must not leave either menu showing the wrong song.
+    if (ticket === loadToken) syncSongSelectors();
+  }
 }
 async function listen() {
   if (listening) {stopListen(); return;}
@@ -327,14 +344,14 @@ for (const id of ['octave', 'range-mode']) $(id).onchange = () => {cancelLearn()
 $('play-mode').onchange = () => {stopListen(); practice.accepted.clear(); free = $('play-mode').value === 'free'; render(); save();};
 $('speed').oninput = () => {$('speed-label').textContent = `${$('speed').value}%`; if (listening) stopListen(); save();};
 $('speed-label').textContent = `${$('speed').value}%`;
-$('song-select').onchange = safe(() => loadLibrary($('song-select').value));
+for (const id of songSelectIds) $(id).onchange = safe(() => loadLibrary($(id).value));
 $('file').onchange = safe(async () => {
   const file = $('file').files[0]; if (!file) return; const ticket = ++loadToken;
   try {
     if (file.size > 8 * 1024 * 1024) throw new Error('Choose a MIDI file smaller than 8 MB.');
     const data = await file.arrayBuffer(); if (ticket !== loadToken) return;
-    setSong(data, file.name.replace(/\.(mid|midi)$/i, ''), 'Local MIDI file · stays on this device', null); $('song-select').value = '';
-  } finally {$('file').value = '';}
+    setSong(data, file.name.replace(/\.(mid|midi)$/i, ''), 'Local MIDI file · stays on this device', null);
+  } finally {$('file').value = ''; if (ticket === loadToken) syncSongSelectors();}
 });
 $('local-import-open').onclick = () => $('file').click();
 $('local-import-close').onclick = () => {$('local-import-prompt').hidden = true;};
@@ -348,8 +365,11 @@ if (!navigator.requestMIDIAccess) $('connect').title = 'This browser has no Web 
   try {
     const res = await fetch('library/index.json'); if (!res.ok) throw new Error('The song library could not be loaded. You can still open a local MIDI file.');
     catalog = await res.json(); if (!Array.isArray(catalog)) throw new Error('Invalid library index.');
-    $('song-select').replaceChildren(new Option('Choose a song…', ''));
-    for (const entry of catalog) $('song-select').add(new Option(entry.title, entry.id));
+    for (const id of songSelectIds) {
+      $(id).replaceChildren(new Option('Choose a song…', ''));
+      for (const entry of catalog) $(id).add(new Option(entry.title, entry.id));
+    }
+    syncSongSelectors();
     const requested = new URL(location.href).searchParams.get('song') || settings.song;
     const entry = catalog.find(e => e.id === requested);
     if (entry?.localOnly) {
